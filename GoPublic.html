@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Go Public - StartWise</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        }
+
+        html, body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* App Layout */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: #ffffff;
+            color: #1e293b;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            color: #64748b;
+            font-size: 15px;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 0 3px 3px 0;
+            transition: height 0.3s ease;
+        }
+
+        .nav a:hover {
+            color: #1e293b;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .nav a.active {
+            color: #1e293b;
+            font-weight: 600;
+            background: rgba(96, 165, 250, 0.15);
+        }
+
+        .nav a.active::before {
+            height: 70%;
+        }
+
+        .new-idea-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .new-idea-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px 48px;
+            overflow-y: auto;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        /* Topbar */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 36px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .topbar h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #334155;
+            background: #f1f5f9;
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-weight: 500;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 48px;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .hero-section h2 {
+            font-size: 32px;
+            color: #1e293b;
+            margin-bottom: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #8b5cf6 50%, #14b8a6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-section p {
+            color: #64748b;
+            font-size: 16px;
+            line-height: 1.7;
+            max-width: 700px;
+            margin: 0 auto 32px;
+        }
+
+        .publish-main-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .publish-main-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 28px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .category {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s ease;
+        }
+
+        .category:hover {
+            background: rgba(96, 165, 250, 0.1);
+            border-color: rgba(96, 165, 250, 0.3);
+            color: #334155;
+        }
+
+        .category.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Ideas Grid */
+        .ideas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 28px;
+            margin-bottom: 32px;
+        }
+
+        .idea-card {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 420px;
+        }
+
+        .idea-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #60a5fa 0%, #8b5cf6 50%, #14b8a6 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .idea-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(96, 165, 250, 0.3);
+            background: #f8fafc;
+        }
+
+        .idea-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .idea-card h3 {
+            font-size: 22px;
+            margin-bottom: 8px;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .meta {
+            font-size: 13px;
+            color: #64748b;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .summary {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #64748b;
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        /* Visibility Metrics */
+        .visibility {
+            margin-bottom: 20px;
+        }
+
+        .visibility-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .visibility-stat {
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .engagement-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .engagement-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #14b8a6);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .engagement-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            font-weight: 600;
+        }
+
+        /* Card Actions */
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .btn {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                min-width: 100%;
+                height: auto;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 24px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .hero-section {
+                padding: 32px 24px;
+            }
+
+            .ideas-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="logo">StartWise</h2>
+
+            <nav class="nav">
+                <a href="index.html">📊 Dashboard</a>
+                <a href="Activities.html">🎯 Activities</a>
+                <a href="Leaderboards.html">🏆 Leaderboards</a>
+                <a href="HistoryPage.html">💡 My Ideas</a>
+                <a href="SeekHelp.html">👨‍🏫 Coaches</a>
+                <a href="GoPublic.html" class="active">💰 Investors</a>
+            </nav>
+        </div>
+
+        <button class="new-idea-btn" onclick="location.href='index.html'">+ New Idea</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+
+        <header class="topbar">
+            <h1>💰 Go Public & Raise Funds</h1>
+            <div class="user">
+                🔔 <span style="font-weight: 600;">User</span>
+            </div>
+        </header>
+
+        <!-- Hero Section with Publish Button -->
+        <div class="hero-section">
+            <h2>Showcase Your Ideas to Investors</h2>
+            <p>
+                Ready to take your startup idea to the next level? Make your validated concepts visible to investors, angel groups, and industry professionals. Share your vision, attract funding, and connect with people who can help bring your idea to life.
+            </p>
+            <button class="publish-main-btn" onclick="alert('Select an idea from My Ideas to publish!')">
+                📤 Publish Your Idea
+            </button>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value">127</div>
+                <div class="stat-label">Ideas Published</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">2.8K</div>
+                <div class="stat-label">Investor Views</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">89</div>
+                <div class="stat-label">Connections Made</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">34</div>
+                <div class="stat-label">Deals Initiated</div>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="categories">
+            <div class="category active" data-category="all">All Ideas</div>
+            <div class="category" data-category="edtech">EdTech</div>
+            <div class="category" data-category="fintech">FinTech</div>
+            <div class="category" data-category="healthtech">HealthTech</div>
+            <div class="category" data-category="ecommerce">E-Commerce</div>
+            <div class="category" data-category="saas">SaaS</div>
+            <div class="category" data-category="consumer">Consumer</div>
+        </div>
+
+        <!-- Ideas Grid -->
+        <div class="ideas-grid" id="ideasGrid">
+            
+            <!-- Card 1 -->
+            <div class="idea-card" data-category="edtech">
+                <div class="card-header">
+                    <div>
+                        <h3>AI-Powered Study Planner</h3>
+                        <div class="meta">
+                            <span class="meta-item">📚 EdTech</span>
+                            <span class="meta-item">👤 Solo Founder</span>
+                            <span class="meta-item">🌍 San Francisco</span>
+                        </div>
+                    </div>
+                    <span class="status-badge">Public</span>
+                </div>
+
+                <p class="summary">
+                    An AI platform that generates personalized learning paths for students based on their goals, pace, and performance. Includes adaptive scheduling, progress tracking, and calendar integration.
+                </p>
+
+                <div class="visibility">
+                    <div class="visibility-header">
+                        <span class="visibility-stat">👁️ 1,247 views</span>
+                        <span class="visibility-stat">💬 34 inquiries</span>
+                    </div>
+                    <div class="engagement-bar">
+                        <div class="engagement-fill" style="width: 68%"></div>
+                    </div>
+                    <div class="engagement-info">📈 High investor interest · 🔥 Trending this week</div>
+                </div>
+
+                <div class="tags">
+                    <span class="tag">AI/ML</span>
+                    <span class="tag">Education</span>
+                    <span class="tag">SaaS</span>
+                    <span class="tag">Seeking: $150K</span>
+                </div>
+
+                <div class="card-actions">
+                    <a href="GoPublic_ReportPage.html" class="btn btn-secondary">📄 View Details</a>
+                    <a href="#" class="btn btn-primary">💬 Contact</a>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="idea-card" data-category="consumer">
+                <div class="card-header">
+                    <div>
+                        <h3>Local Coffee Subscription</h3>
+                        <div class="meta">
+                            <span class="meta-item">☕ Consumer</span>
+                            <span class="meta-item">👥 Team of 2</span>
+                            <span class="meta-item">🌍 Portland</span>
+                        </div>
+                    </div>
+                    <span class="status-badge">Public</span>
+                </div>
+
+                <p class="summary">
+                    A subscription service connecting local coffee roasters with nearby customers through curated monthly boxes. Supporting local businesses while delivering fresh, artisanal coffee.
+                </p>
+
+                <div class="visibility">
+                    <div class="visibility-header">
+                        <span class="visibility-stat">👁️ 892 views</span>
+                        <span class="visibility-stat">💬 21 inquiries</span>
+                    </div>
+                    <div class="engagement-bar">
+                        <div class="engagement-fill" style="width: 45%"></div>
+                    </div>
+                    <div class="engagement-info">📈 Growing interest · 🌟 Featured idea</div>
+                </div>
+
+                <div class="tags">
+                    <span class="tag">Marketplace</span>
+                    <span class="tag">DTC</span>
+                    <span class="tag">Food & Bev</span>
+                    <span class="tag">Seeking: $100K</span>
+                </div>
+
+                <div class="card-actions">
+                    <a href="GoPublic_ReportPage.html" class="btn btn-secondary">📄 View Details</a>
+                    <a href="#" class="btn btn-primary">💬 Contact</a>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="idea-card" data-category="healthtech">
+                <div class="card-header">
+                    <div>
+                        <h3>HealthTrack Pro</h3>
+                        <div class="meta">
+                            <span class="meta-item">🏥 HealthTech</span>
+                            <span class="meta-item">👥 Team of 4</span>
+                            <span class="meta-item">🌍 Boston</span>
+                        </div>
+                    </div>
+                    <span class="status-badge">Public</span>
+                </div>
+
+                <p class="summary">
+                    A comprehensive health monitoring platform that integrates wearable devices, AI diagnostics, and telemedicine to provide personalized health insights and preventive care.
+                </p>
+
+                <div class="visibility">
+                    <div class="visibility-header">
+                        <span class="visibility-stat">👁️ 2,156 views</span>
+                        <span class="visibility-stat">💬 67 inquiries</span>
+                    </div>
+                    <div class="engagement-bar">
+                        <div class="engagement-fill" style="width: 85%"></div>
+                    </div>
+                    <div class="engagement-info">🔥 Hot idea · 💼 Multiple investor contacts</div>
+                </div>
+
+                <div class="tags">
+                    <span class="tag">AI</span>
+                    <span class="tag">Healthcare</span>
+                    <span class="tag">IoT</span>
+                    <span class="tag">Seeking: $250K</span>
+                </div>
+
+                <div class="card-actions">
+                    <a href="GoPublic_ReportPage.html" class="btn btn-secondary">📄 View Details</a>
+                    <a href="#" class="btn btn-primary">💬 Contact</a>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="idea-card" data-category="consumer">
+                <div class="card-header">
+                    <div>
+                        <h3>GreenCommute</h3>
+                        <div class="meta">
+                            <span class="meta-item">🚗 Mobility</span>
+                            <span class="meta-item">👥 Team of 3</span>
+                            <span class="meta-item">🌍 Austin</span>
+                        </div>
+                    </div>
+                    <span class="status-badge">Public</span>
+                </div>
+
+                <p class="summary">
+                    Eco-friendly corporate commute solutions with electric bike-sharing and carpooling app. Helping companies reduce carbon footprint while saving employees money.
+                </p>
+
+                <div class="visibility">
+                    <div class="visibility-header">
+                        <span class="visibility-stat">👁️ 534 views</span>
+                        <span class="visibility-stat">💬 12 inquiries</span>
+                    </div>
+                    <div class="engagement-bar">
+                        <div class="engagement-fill" style="width: 28%"></div>
+                    </div>
+                    <div class="engagement-info">📊 Building traction · 🆕 Recently published</div>
+                </div>
+
+                <div class="tags">
+                    <span class="tag">Climate</span>
+                    <span class="tag">B2B</span>
+                    <span class="tag">Mobility</span>
+                    <span class="tag">Seeking: $200K</span>
+                </div>
+
+                <div class="card-actions">
+                    <a href="GoPublic_ReportPage.html" class="btn btn-secondary">📄 View Details</a>
+                    <a href="#" class="btn btn-primary">💬 Contact</a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+<script>
+    const categories = document.querySelectorAll('.category');
+    const cards = document.querySelectorAll('.idea-card');
+
+    categories.forEach(cat => {
+        cat.addEventListener('click', () => {
+            categories.forEach(c => c.classList.remove('active'));
+            cat.classList.add('active');
+            const selected = cat.getAttribute('data-category');
+            
+            cards.forEach(card => {
+                if (selected === 'all') {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = card.getAttribute('data-category') === selected ? 'flex' : 'none';
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coaches - StartWise</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        }
+
+        html, body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* App Layout */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: #ffffff;
+            color: #1e293b;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            color: #64748b;
+            font-size: 15px;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 0 3px 3px 0;
+            transition: height 0.3s ease;
+        }
+
+        .nav a:hover {
+            color: #1e293b;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .nav a.active {
+            color: #1e293b;
+            font-weight: 600;
+            background: rgba(96, 165, 250, 0.15);
+        }
+
+        .nav a.active::before {
+            height: 70%;
+        }
+
+        .new-idea-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .new-idea-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px 48px;
+            overflow-y: auto;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        /* Topbar */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 36px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .topbar h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #334155;
+            background: #f1f5f9;
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-weight: 500;
+        }
+
+        /* Section Header */
+        .section-header {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .section-header h2 {
+            font-size: 26px;
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .category {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s ease;
+        }
+
+        .category:hover {
+            background: rgba(96, 165, 250, 0.1);
+            border-color: rgba(96, 165, 250, 0.3);
+            color: #334155;
+        }
+
+        .category.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Coaches Grid */
+        .coaches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 28px;
+            margin-bottom: 32px;
+        }
+
+        .coach-card {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 380px;
+        }
+
+        .coach-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .coach-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(96, 165, 250, 0.3);
+            background: #f8fafc;
+        }
+
+        .coach-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .coach-content {
+            flex: 1;
+        }
+
+        .coach-card h3 {
+            font-size: 22px;
+            margin-bottom: 6px;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .coach-title {
+            font-size: 14px;
+            color: #60a5fa;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            font-weight: 600;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .content {
+                padding: 24px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .coaches-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="logo">StartWise</h2>
+
+            <nav class="nav">
+                <a href="index.html">📊 Dashboard</a>
+                <a href="Activities.html">🎯 Activities</a>
+                <a href="Leaderboards.html">🏆 Leaderboards</a>
+                <a href="HistoryPage.html">💡 My Ideas</a>
+                <a href="SeekHelp.html" class="active">👨‍🏫 Coaches</a>
+                <a href="GoPublic.html">💰 Investors</a>
+            </nav>
+        </div>
+
+        <button class="new-idea-btn" onclick="location.href='index.html'">+ New Idea</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+
+        <header class="topbar">
+            <h1>👨‍🏫 Expert Coaches</h1>
+            <div class="user">
+                🔔 <span style="font-weight: 600;">User</span>
+            </div>
+        </header>
+
+        <!-- Section Header -->
+        <div class="section-header">
+            <h2>Connect with Experienced Professionals</h2>
+            <p class="section-subtitle">
+                Get personalized guidance from industry experts when you need human expertise. 
+                Our coaches specialize in technical development, business strategy, legal compliance, and growth marketing.
+            </p>
+        </div>
+
+        <!-- Categories -->
+        <div class="categories">
+            <div class="category active" data-category="technical">Technical Help</div>
+            <div class="category" data-category="financial">Financial Help</div>
+            <div class="category" data-category="legal">Legal & Compliance</div>
+            <div class="category" data-category="marketing">Marketing & Growth</div>
+            <div class="category" data-category="others">Others</div>
+        </div>
+
+        <!-- Coaches Grid -->
+        <div class="coaches-grid" id="coachesGrid">
+
+            <!-- Technical Coaches -->
+            <div class="coach-card" data-category="technical">
+                <div class="avatar">AL</div>
+                <div class="coach-content">
+                    <h3>Alex Lee</h3>
+                    <div class="coach-title">DevOps Engineer</div>
+                    <div class="tags">
+                        <div class="tag">System Design</div>
+                        <div class="tag">Scalability</div>
+                        <div class="tag">Cloud Infrastructure</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <div class="coach-card" data-category="technical">
+                <div class="avatar">JW</div>
+                <div class="coach-content">
+                    <h3>Jamie Willis</h3>
+                    <div class="coach-title">Senior Haskell Programmer</div>
+                    <div class="tags">
+                        <div class="tag">Functional Programming</div>
+                        <div class="tag">Cloud</div>
+                        <div class="tag">CI/CD</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <div class="coach-card" data-category="technical">
+                <div class="avatar">CD</div>
+                <div class="coach-content">
+                    <h3>Clara Diaz</h3>
+                    <div class="coach-title">AI Researcher</div>
+                    <div class="tags">
+                        <div class="tag">Machine Learning</div>
+                        <div class="tag">NLP</div>
+                        <div class="tag">Deep Learning</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <!-- Financial Coaches -->
+            <div class="coach-card" data-category="financial" style="display:none;">
+                <div class="avatar">NW</div>
+                <div class="coach-content">
+                    <h3>Nick Wu</h3>
+                    <div class="coach-title">Startup CFO · 10+ Years</div>
+                    <div class="tags">
+                        <div class="tag">Fundraising</div>
+                        <div class="tag">Financial Modeling</div>
+                        <div class="tag">Cap Tables</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <div class="coach-card" data-category="financial" style="display:none;">
+                <div class="avatar">EK</div>
+                <div class="coach-content">
+                    <h3>Emily Kim</h3>
+                    <div class="coach-title">Financial Consultant</div>
+                    <div class="tags">
+                        <div class="tag">Budgeting</div>
+                        <div class="tag">Forecasting</div>
+                        <div class="tag">Growth Strategy</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <div class="coach-card" data-category="financial" style="display:none;">
+                <div class="avatar">RC</div>
+                <div class="coach-content">
+                    <h3>Robert Chen</h3>
+                    <div class="coach-title">Investment Analyst</div>
+                    <div class="tags">
+                        <div class="tag">Valuation</div>
+                        <div class="tag">Due Diligence</div>
+                        <div class="tag">Strategy</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <!-- Legal Coaches -->
+            <div class="coach-card" data-category="legal" style="display:none;">
+                <div class="avatar">JR</div>
+                <div class="coach-content">
+                    <h3>Julia Richards</h3>
+                    <div class="coach-title">Startup Lawyer · US & EU</div>
+                    <div class="tags">
+                        <div class="tag">Incorporation</div>
+                        <div class="tag">Equity</div>
+                        <div class="tag">Compliance</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <div class="coach-card" data-category="legal" style="display:none;">
+                <div class="avatar">MS</div>
+                <div class="coach-content">
+                    <h3>Mia Santos</h3>
+                    <div class="coach-title">Corporate Lawyer</div>
+                    <div class="tags">
+                        <div class="tag">Contracts</div>
+                        <div class="tag">IP Protection</div>
+                        <div class="tag">Regulations</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <div class="coach-card" data-category="legal" style="display:none;">
+                <div class="avatar">TR</div>
+                <div class="coach-content">
+                    <h3>Tom Richards</h3>
+                    <div class="coach-title">Compliance Specialist</div>
+                    <div class="tags">
+                        <div class="tag">RegTech</div>
+                        <div class="tag">Audit</div>
+                        <div class="tag">Risk Management</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <!-- Marketing Coaches -->
+            <div class="coach-card" data-category="marketing" style="display:none;">
+                <div class="avatar">SG</div>
+                <div class="coach-content">
+                    <h3>Sarah Green</h3>
+                    <div class="coach-title">Growth Marketing Expert</div>
+                    <div class="tags">
+                        <div class="tag">SEO</div>
+                        <div class="tag">Content Strategy</div>
+                        <div class="tag">Social Media</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <div class="coach-card" data-category="marketing" style="display:none;">
+                <div class="avatar">DM</div>
+                <div class="coach-content">
+                    <h3>David Miller</h3>
+                    <div class="coach-title">Brand Strategist</div>
+                    <div class="tags">
+                        <div class="tag">Brand Identity</div>
+                        <div class="tag">Positioning</div>
+                        <div class="tag">Storytelling</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <div class="coach-card" data-category="marketing" style="display:none;">
+                <div class="avatar">LP</div>
+                <div class="coach-content">
+                    <h3>Lisa Park</h3>
+                    <div class="coach-title">Performance Marketing Lead</div>
+                    <div class="tags">
+                        <div class="tag">Paid Ads</div>
+                        <div class="tag">Analytics</div>
+                        <div class="tag">Conversion</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <!-- Others -->
+            <div class="coach-card" data-category="others" style="display:none;">
+                <div class="avatar">MJ</div>
+                <div class="coach-content">
+                    <h3>Michael Johnson</h3>
+                    <div class="coach-title">Product Manager</div>
+                    <div class="tags">
+                        <div class="tag">Product Strategy</div>
+                        <div class="tag">Roadmapping</div>
+                        <div class="tag">User Research</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+            <div class="coach-card" data-category="others" style="display:none;">
+                <div class="avatar">AB</div>
+                <div class="coach-content">
+                    <h3>Anna Brown</h3>
+                    <div class="coach-title">HR & Culture Consultant</div>
+                    <div class="tags">
+                        <div class="tag">Team Building</div>
+                        <div class="tag">Hiring</div>
+                        <div class="tag">Culture</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="location.href='SeekHelp_ProfilePage.html'">View Profile</button>
+                    <button class="btn btn-primary">Chat Now</button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+<script>
+    const categories = document.querySelectorAll('.category');
+    const cards = document.querySelectorAll('.coach-card');
+
+    categories.forEach(cat => {
+        cat.addEventListener('click', () => {
+            categories.forEach(c => c.classList.remove('active'));
+            cat.classList.add('active');
+            const selected = cat.getAttribute('data-category');
+            cards.forEach(card => {
+                card.style.display = card.getAttribute('data-category') === selected ? 'flex' : 'none';
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

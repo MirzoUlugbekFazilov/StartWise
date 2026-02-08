@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI-Powered Study Planner - StartWise</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        }
+
+        html, body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* App Layout */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: #ffffff;
+            color: #1e293b;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            color: #64748b;
+            font-size: 15px;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 0 3px 3px 0;
+            transition: height 0.3s ease;
+        }
+
+        .nav a:hover {
+            color: #1e293b;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .nav a.active {
+            color: #1e293b;
+            font-weight: 600;
+            background: rgba(96, 165, 250, 0.15);
+        }
+
+        .nav a.active::before {
+            height: 70%;
+        }
+
+        .new-idea-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .new-idea-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px 48px;
+            overflow-y: auto;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #60a5fa;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            color: #93c5fd;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .chat-header {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 32px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header-info h1 {
+            font-size: 32px;
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .chat-header-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .chat-header-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .report-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .report-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Chat Messages */
+        .chat-messages {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 32px;
+        }
+
+        .chat-block {
+            display: flex;
+            margin-bottom: 24px;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .chat-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .chat-block.user {
+            justify-content: flex-end;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .chat-block.user .chat-avatar {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: white;
+            order: 2;
+        }
+
+        .chat-block.ai .chat-avatar {
+            background: #f1f5f9;
+            color: #60a5fa;
+            border: 1px solid #e2e8f0;
+            order: 1;
+        }
+
+        .chat-message-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-block.user .chat-message-wrapper {
+            order: 1;
+            align-items: flex-end;
+        }
+
+        .chat-block.ai .chat-message-wrapper {
+            order: 2;
+            align-items: flex-start;
+        }
+
+        .chat-message {
+            max-width: 75%;
+            padding: 16px 20px;
+            border-radius: 16px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .chat-block.user .chat-message {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-block.ai .chat-message {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-time {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 8px;
+        }
+
+        .chat-block.user .chat-time {
+            text-align: right;
+        }
+
+        /* Summary Section */
+        .summary-section {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 32px;
+            margin-top: 32px;
+        }
+
+        .summary-section h2 {
+            font-size: 24px;
+            color: #1e293b;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .summary-content {
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .summary-content p {
+            margin-bottom: 12px;
+        }
+
+        .summary-content ul {
+            margin-left: 20px;
+            margin-top: 12px;
+        }
+
+        .summary-content li {
+            margin-bottom: 8px;
+        }
+
+        /* Actions */
+        .actions-section {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 24px;
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .action-btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .action-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .action-btn-secondary {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+        }
+
+        .action-btn-secondary:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .content {
+                padding: 24px;
+            }
+
+            .chat-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .actions-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="logo">StartWise</h2>
+
+            <nav class="nav">
+                <a href="index.html">📊 Dashboard</a>
+                <a href="Activities.html">🎯 Activities</a>
+                <a href="Leaderboards.html">🏆 Leaderboards</a>
+                <a href="HistoryPage.html" class="active">💡 My Ideas</a>
+                <a href="SeekHelp.html">👨‍🏫 Coaches</a>
+                <a href="GoPublic.html">💰 Investors</a>
+            </nav>
+        </div>
+
+        <button class="new-idea-btn" onclick="location.href='index.html'">+ New Idea</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+
+        <a href="HistoryPage.html" class="back-btn">← Back to My Ideas</a>
+
+        <div class="chat-container">
+
+            <!-- Header -->
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <h1>AI-Powered Study Planner</h1>
+                    <div class="chat-header-meta">
+                        <span>📅 Feb 7, 2026 • 2:30 PM</span>
+                        <span>💬 8 Messages</span>
+                        <span>⏱️ 12 min</span>
+                    </div>
+                </div>
+                <button class="report-btn" onclick="alert('Generating latest report...')">📊 View Report</button>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages">
+                
+                <div class="chat-block user">
+                    <div class="chat-message-wrapper">
+                        <div class="chat-message">
+                            I want to build a product that helps students create personalized learning paths using AI.
+                        </div>
+                        <div class="chat-time">2:30 PM</div>
+                    </div>
+                    <div class="chat-avatar">👤</div>
+                </div>
+
+                <div class="chat-block ai">
+                    <div class="chat-avatar">🤖</div>
+                    <div class="chat-message-wrapper">
+                        <div class="chat-message">
+                            That's an exciting idea! Personalized learning is a growing market, especially as education becomes more digital. You could start by analyzing student goals, current performance, and learning pace to suggest an optimized path. What specific student segment are you targeting - high school, university, or professional learners?
+                        </div>
+                        <div class="chat-time">2:31 PM</div>
+                    </div>
+                </div>
+
+                <div class="chat-block user">
+                    <div class="chat-message-wrapper">
+                        <div class="chat-message">
+                            Initially targeting university students, especially those taking STEM courses. They often struggle with time management and knowing what to study when.
+                        </div>
+                        <div class="chat-time">2:32 PM</div>
+                    </div>
+                    <div class="chat-avatar">👤</div>
+                </div>
+
+                <div class="chat-block ai">
+                    <div class="chat-avatar">🤖</div>
+                    <div class="chat-message-wrapper">
+                        <div class="chat-message">
+                            Great niche! University STEM students have demanding schedules and complex material. Your AI could help them prioritize topics based on exam dates, difficulty level, and their current understanding. Have you thought about how you'll gather data on their current knowledge and performance?
+                        </div>
+                        <div class="chat-time">2:33 PM</div>
+                    </div>
+                </div>
+
+                <div class="chat-block user">
+                    <div class="chat-message-wrapper">
+                        <div class="chat-message">
+                            Maybe through quizzes and self-assessments? Can it also give reminders and track progress automatically?
+                        </div>
+                        <div class="chat-time">2:35 PM</div>
+                    </div>
+                    <div class="chat-avatar">👤</div>
+                </div>
+
+                <div class="chat-block ai">
+                    <div class="chat-avatar">🤖</div>
+                    <div class="chat-message-wrapper">
+                        <div class="chat-message">
+                            Absolutely! Integrating notifications and progress tracking would significantly enhance the user experience. You could add:
+                            <br><br>
+                            • Smart reminders based on optimal study times<br>
+                            • Visual progress dashboards showing mastery levels<br>
+                            • Adaptive scheduling that adjusts based on their actual progress<br>
+                            • Spaced repetition algorithms for better retention
+                            <br><br>
+                            This would make it feel like a personal study coach that's always available.
+                        </div>
+                        <div class="chat-time">2:36 PM</div>
+                    </div>
+                </div>
+
+                <div class="chat-block user">
+                    <div class="chat-message-wrapper">
+                        <div class="chat-message">
+                            I love the spaced repetition idea! What about integrating with their existing calendars and course schedules?
+                        </div>
+                        <div class="chat-time">2:38 PM</div>
+                    </div>
+                    <div class="chat-avatar">👤</div>
+                </div>
+
+                <div class="chat-block ai">
+                    <div class="chat-avatar">🤖</div>
+                    <div class="chat-message-wrapper">
+                        <div class="chat-message">
+                            That's a killer feature! Calendar integration would let your AI automatically:
+                            <br><br>
+                            • Block out class times and commitments<br>
+                            • Suggest optimal study slots in their free time<br>
+                            • Send reminders before exams and assignments<br>
+                            • Adjust study plans around their real schedule
+                            <br><br>
+                            You could integrate with Google Calendar, Outlook, and campus LMS systems. This would make adoption much easier since they don't have to manually input their schedule.
+                        </div>
+                        <div class="chat-time">2:39 PM</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Summary -->
+            <div class="summary-section">
+                <h2>💡 Discussion Summary</h2>
+                <div class="summary-content">
+                    <p>
+                        <strong>Concept:</strong> An AI-powered study planning platform for university STEM students that creates personalized learning paths.
+                    </p>
+                    <p>
+                        <strong>Key Features Discussed:</strong>
+                    </p>
+                    <ul>
+                        <li>Personalized learning paths based on goals, performance, and pace</li>
+                        <li>Quizzes and self-assessments for knowledge evaluation</li>
+                        <li>Smart reminders and notifications</li>
+                        <li>Visual progress tracking and dashboards</li>
+                        <li>Adaptive scheduling that responds to actual progress</li>
+                        <li>Spaced repetition for improved retention</li>
+                        <li>Calendar integration (Google Calendar, Outlook, LMS)</li>
+                        <li>Automatic schedule optimization around classes and commitments</li>
+                    </ul>
+                    <p>
+                        <strong>Target Market:</strong> University students taking STEM courses who struggle with time management and study prioritization.
+                    </p>
+                    <p>
+                        <strong>Next Steps:</strong> Consider building an MVP focusing on one subject area, test with a small group of students, and gather feedback on the core features.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions-section">
+                <button class="action-btn action-btn-primary" onclick="alert('Continuing this idea...')">Continue Discussion</button>
+                <button class="action-btn action-btn-secondary" onclick="alert('Exporting conversation...')">Export Chat</button>
+                <button class="action-btn action-btn-secondary" onclick="location.href='GoPublic.html'">Share with Investors</button>
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

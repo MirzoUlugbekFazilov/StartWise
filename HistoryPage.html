@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Ideas - StartWise</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        }
+
+        html, body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* App Layout */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: #ffffff;
+            color: #1e293b;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            color: #64748b;
+            font-size: 15px;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 0 3px 3px 0;
+            transition: height 0.3s ease;
+        }
+
+        .nav a:hover {
+            color: #1e293b;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .nav a.active {
+            color: #1e293b;
+            font-weight: 600;
+            background: rgba(96, 165, 250, 0.15);
+        }
+
+        .nav a.active::before {
+            height: 70%;
+        }
+
+        .new-idea-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .new-idea-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px 48px;
+            overflow-y: auto;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        /* Topbar */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 36px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .topbar h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #334155;
+            background: #f1f5f9;
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-weight: 500;
+        }
+
+        /* Section Header */
+        .section-header {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .section-header h2 {
+            font-size: 26px;
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* Ideas Grid */
+        .ideas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 28px;
+            margin-bottom: 32px;
+        }
+
+        .idea-card {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 280px;
+        }
+
+        .idea-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .idea-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(96, 165, 250, 0.3);
+            background: #f8fafc;
+        }
+
+        .idea-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .idea-time {
+            font-size: 13px;
+            color: #60a5fa;
+            margin-bottom: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .idea-content {
+            flex: 1;
+        }
+
+        .idea-card h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            color: #1e293b;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .idea-summary {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .idea-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .idea-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+
+        .view-btn {
+            padding: 8px 16px;
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            transform: translateX(2px);
+        }
+
+        /* Empty State */
+        .empty-state {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 64px 32px;
+            text-align: center;
+            margin-top: 32px;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 24px;
+        }
+
+        .empty-state-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .empty-state-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .content {
+                padding: 24px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .ideas-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="logo">StartWise</h2>
+
+            <nav class="nav">
+                <a href="index.html">📊 Dashboard</a>
+                <a href="Activities.html">🎯 Activities</a>
+                <a href="Leaderboards.html">🏆 Leaderboards</a>
+                <a href="HistoryPage.html" class="active">💡 My Ideas</a>
+                <a href="SeekHelp.html">👨‍🏫 Coaches</a>
+                <a href="GoPublic.html">💰 Investors</a>
+            </nav>
+        </div>
+
+        <button class="new-idea-btn" onclick="location.href='index.html'">+ New Idea</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+
+        <header class="topbar">
+            <h1>💡 My Ideas</h1>
+            <div class="user">
+                🔔 <span style="font-weight: 600;">User</span>
+            </div>
+        </header>
+
+        <!-- Section Header -->
+        <div class="section-header">
+            <h2>Your Idea Journey</h2>
+            <p class="section-subtitle">
+                Track all your startup ideas, discussions, and progress reports in one place. 
+                Review your conversations with AI coaches and see how your ideas have evolved over time.
+            </p>
+        </div>
+
+        <!-- Ideas Grid -->
+        <div class="ideas-grid">
+            
+            <div class="idea-card" onclick="location.href='History_DetailPage.html'">
+                <div class="idea-time">📅 Feb 7, 2026 • 2:30 PM</div>
+                <div class="idea-content">
+                    <h3>AI-Powered Study Planner</h3>
+                    <div class="idea-summary">
+                        Discussion about creating an AI tool for students to plan personalized learning paths efficiently. 
+                        Explored features like adaptive scheduling, progress tracking, and performance analytics.
+                    </div>
+                </div>
+                <div class="idea-footer">
+                    <span class="idea-status">💬 In Progress</span>
+                    <button class="view-btn" onclick="event.stopPropagation(); location.href='History_DetailPage.html'">View Details →</button>
+                </div>
+            </div>
+
+            <div class="idea-card" onclick="location.href='History_DetailPage.html'">
+                <div class="idea-time">📅 Feb 6, 2026 • 11:00 AM</div>
+                <div class="idea-content">
+                    <h3>Local Coffee Subscription</h3>
+                    <div class="idea-summary">
+                        Exploring the concept of a subscription box connecting local coffee roasters with customers. 
+                        Discussed logistics, pricing models, and partnership strategies with local roasters.
+                    </div>
+                </div>
+                <div class="idea-footer">
+                    <span class="idea-status">✅ Completed</span>
+                    <button class="view-btn" onclick="event.stopPropagation(); location.href='History_DetailPage.html'">View Details →</button>
+                </div>
+            </div>
+
+            <div class="idea-card" onclick="location.href='History_DetailPage.html'">
+                <div class="idea-time">📅 Feb 5, 2026 • 4:45 PM</div>
+                <div class="idea-content">
+                    <h3>Marketplace for Freelancers</h3>
+                    <div class="idea-summary">
+                        Brainstormed a platform to match freelancers with businesses needing project-based work. 
+                        Analyzed competitive landscape, revenue models, and unique value propositions.
+                    </div>
+                </div>
+                <div class="idea-footer">
+                    <span class="idea-status">🔍 Under Review</span>
+                    <button class="view-btn" onclick="event.stopPropagation(); location.href='History_DetailPage.html'">View Details →</button>
+                </div>
+            </div>
+
+            <div class="idea-card" onclick="location.href='History_DetailPage.html'">
+                <div class="idea-time">📅 Feb 4, 2026 • 9:15 AM</div>
+                <div class="idea-content">
+                    <h3>Smart Home Energy Monitor</h3>
+                    <div class="idea-summary">
+                        Discussed building an IoT device that tracks home energy consumption in real-time and provides 
+                        actionable insights to reduce electricity bills and carbon footprint.
+                    </div>
+                </div>
+                <div class="idea-footer">
+                    <span class="idea-status">💬 In Progress</span>
+                    <button class="view-btn" onclick="event.stopPropagation(); location.href='History_DetailPage.html'">View Details →</button>
+                </div>
+            </div>
+
+            <div class="idea-card" onclick="location.href='History_DetailPage.html'">
+                <div class="idea-time">📅 Feb 3, 2026 • 3:20 PM</div>
+                <div class="idea-content">
+                    <h3>Pet Care Coordination App</h3>
+                    <div class="idea-summary">
+                        Explored creating a mobile app that connects pet owners with local veterinarians, groomers, 
+                        and pet sitters. Discussed scheduling, reviews, and payment integration.
+                    </div>
+                </div>
+                <div class="idea-footer">
+                    <span class="idea-status">✅ Completed</span>
+                    <button class="view-btn" onclick="event.stopPropagation(); location.href='History_DetailPage.html'">View Details →</button>
+                </div>
+            </div>
+
+            <div class="idea-card" onclick="location.href='History_DetailPage.html'">
+                <div class="idea-time">📅 Feb 2, 2026 • 1:50 PM</div>
+                <div class="idea-content">
+                    <h3>Virtual Cooking Classes Platform</h3>
+                    <div class="idea-summary">
+                        Brainstormed a platform where professional chefs can host live interactive cooking classes. 
+                        Discussed monetization, equipment requirements, and community building features.
+                    </div>
+                </div>
+                <div class="idea-footer">
+                    <span class="idea-status">🔍 Under Review</span>
+                    <button class="view-btn" onclick="event.stopPropagation(); location.href='History_DetailPage.html'">View Details →</button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

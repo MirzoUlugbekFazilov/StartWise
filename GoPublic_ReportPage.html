@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI-Powered Study Planner - StartWise</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        }
+
+        html, body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            color: #1e293b;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* App Layout */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: #ffffff;
+            color: #1e293b;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            color: #64748b;
+            font-size: 15px;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 0 3px 3px 0;
+            transition: height 0.3s ease;
+        }
+
+        .nav a:hover {
+            color: #1e293b;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .nav a.active {
+            color: #1e293b;
+            font-weight: 600;
+            background: rgba(96, 165, 250, 0.15);
+        }
+
+        .nav a.active::before {
+            height: 70%;
+        }
+
+        .new-idea-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .new-idea-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px 48px;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+
+        /* Topbar */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #334155;
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #334155;
+            background: #f1f5f9;
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-weight: 500;
+        }
+
+        /* Layout Grid */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 32px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Main Column */
+        .main-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Card Base */
+        .card {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 32px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(96, 165, 250, 0.2);
+        }
+
+        /* Hero Card */
+        .hero-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #60a5fa 0%, #8b5cf6 50%, #14b8a6 100%);
+        }
+
+        .hero-card h1 {
+            font-size: 42px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #60a5fa 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .hero-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .tagline {
+            font-size: 17px;
+            color: #475569;
+            line-height: 1.7;
+        }
+
+        /* Visibility Card */
+        .visibility-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.08));
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .visibility-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .engagement-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .engagement-header {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            color: #1e293b;
+        }
+
+        .engagement-bar {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .engagement-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #14b8a6);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .engagement-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .engagement-info span:first-child {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .engagement-info span:last-child {
+            color: #64748b;
+        }
+
+        /* Section Card */
+        .section h2 {
+            font-size: 26px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .section p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #475569;
+            margin-bottom: 16px;
+        }
+
+        .section ul {
+            margin-left: 24px;
+            color: #475569;
+        }
+
+        .section li {
+            margin-bottom: 12px;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .section li strong {
+            color: #f1f5f9;
+        }
+
+        /* Sidebar */
+        .sidebar-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: sticky;
+            top: 40px;
+            height: fit-content;
+        }
+
+        /* Founder Card */
+        .founder-card {
+            text-align: center;
+        }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            margin: 0 auto 20px;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .founder-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f1f5f9;
+        }
+
+        .founder-role {
+            font-size: 14px;
+            color: #60a5fa;
+            margin-bottom: 18px;
+            font-weight: 600;
+        }
+
+        .founder-bio {
+            font-size: 15px;
+            color: #cbd5e1;
+            line-height: 1.7;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .social-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+
+        .social-btn:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 16px 24px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Info Card */
+        .info-card h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f1f5f9;
+            font-weight: 700;
+        }
+
+        .metrics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .metric-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        /* Documents */
+        .documents-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .doc-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .doc-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(96, 165, 250, 0.3);
+            transform: translateX(4px);
+        }
+
+        .doc-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .doc-info {
+            flex: 1;
+        }
+
+        .doc-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: #f1f5f9;
+        }
+
+        .doc-size {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-column {
+                position: relative;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                min-width: 100%;
+                height: auto;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 24px;
+            }
+
+            .hero-card h1 {
+                font-size: 32px;
+            }
+
+            .visibility-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="logo">StartWise</h2>
+
+            <nav class="nav">
+                <a href="index.html">📊 Dashboard</a>
+                <a href="Activities.html">🎯 Activities</a>
+                <a href="Leaderboards.html">🏆 Leaderboards</a>
+                <a href="HistoryPage.html">💡 My Ideas</a>
+                <a href="SeekHelp.html">👨‍🏫 Coaches</a>
+                <a href="GoPublic.html" class="active">💰 Investors</a>
+            </nav>
+        </div>
+
+        <button class="new-idea-btn" onclick="location.href='index.html'">+ New Idea</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+
+        <header class="topbar">
+            <a href="GoPublic.html" class="back-link">← Back to Showcase</a>
+            <div class="user">
+                🔔 <span style="font-weight: 600;">User</span>
+            </div>
+        </header>
+
+        <div class="layout-grid">
+            
+            <!-- Main Column -->
+            <div class="main-column">
+                
+                <!-- Hero Card -->
+                <div class="card hero-card">
+                    <h1>AI-Powered Study Planner</h1>
+                    <div class="hero-meta">
+                        <span>📚 EdTech</span>
+                        <span>👤 Solo Founder</span>
+                        <span>🌍 San Francisco, CA</span>
+                        <span>✅ Verified Idea</span>
+                    </div>
+                    <p class="tagline">
+                        An AI platform that generates personalized learning paths for university students, helping them optimize their study time and improve academic performance through adaptive scheduling and progress tracking.
+                    </p>
+                </div>
+
+                <!-- Visibility & Engagement -->
+                <div class="card visibility-card">
+                    <h2 style="font-size: 24px; margin-bottom: 24px; color: #f1f5f9;">📊 Visibility & Engagement</h2>
+                    <div class="visibility-stats">
+                        <div class="stat">
+                            <div class="stat-value">1,247</div>
+                            <div class="stat-label">Total Views</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">34</div>
+                            <div class="stat-label">Inquiries</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Investor Saves</div>
+                        </div>
+                    </div>
+                    <div class="engagement-section">
+                        <div class="engagement-header">Investor Interest Level</div>
+                        <div class="engagement-bar">
+                            <div class="engagement-fill" style="width: 68%"></div>
+                        </div>
+                        <div class="engagement-info">
+                            <span>High Interest</span>
+                            <span>🔥 Trending this week</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Problem -->
+                <div class="card section">
+                    <h2>🎯 The Problem</h2>
+                    <p>
+                        University students, particularly in STEM fields, struggle to create effective study plans that align with their individual learning pace, course schedules, and exam dates. Current solutions are generic and don't adapt to student performance or changing priorities.
+                    </p>
+                    <p>
+                        This results in inefficient studying, missed topics, last-minute cramming, and ultimately lower academic performance. Students need a personalized, intelligent system that acts as their study coach.
+                    </p>
+                </div>
+
+                <!-- Solution -->
+                <div class="card section">
+                    <h2>💡 Our Solution</h2>
+                    <p>
+                        AI-Powered Study Planner uses machine learning to create dynamic, personalized learning paths for each student. The platform:
+                    </p>
+                    <ul>
+                        <li>Analyzes student goals, current performance, and learning pace</li>
+                        <li>Generates optimized study schedules that adapt in real-time</li>
+                        <li>Integrates with calendars and campus LMS systems</li>
+                        <li>Uses spaced repetition algorithms for better retention</li>
+                        <li>Provides visual progress dashboards and smart reminders</li>
+                        <li>Automatically adjusts based on quiz results and self-assessments</li>
+                    </ul>
+                </div>
+
+                <!-- Market -->
+                <div class="card section">
+                    <h2>📊 Market Opportunity</h2>
+                    <p>
+                        The global EdTech market is projected to reach $404 billion by 2025, with personalized learning solutions growing at 15% CAGR. Our initial target market includes:
+                    </p>
+                    <ul>
+                        <li><strong>Primary:</strong> 20M+ university students in the US (STEM focus)</li>
+                        <li><strong>Secondary:</strong> Professional learners and certification seekers</li>
+                        <li><strong>Expansion:</strong> Global markets with English-speaking student populations</li>
+                    </ul>
+                    <p>
+                        Competitors like Quizlet and Khan Academy lack personalized AI-driven scheduling. We differentiate through calendar integration, adaptive learning paths, and real-time performance tracking.
+                    </p>
+                </div>
+
+                <!-- Traction -->
+                <div class="card section">
+                    <h2>🚀 Traction & Validation</h2>
+                    <p>
+                        We've completed a successful pilot program with promising results:
+                    </p>
+                    <ul>
+                        <li>50 beta users tested the MVP over 8 weeks</li>
+                        <li>30% improvement in study consistency and time management</li>
+                        <li>4.7/5 average user satisfaction rating</li>
+                        <li>85% of users indicated they would pay for the service</li>
+                        <li>2 partnerships in discussion with university study centers</li>
+                    </ul>
+                    <p>
+                        We're now ready to scale with a full product launch targeting 1,000 paying users in the first 6 months.
+                    </p>
+                </div>
+
+                <!-- Business Model -->
+                <div class="card section">
+                    <h2>💼 Business Model</h2>
+                    <p>
+                        Freemium SaaS model with multiple revenue streams:
+                    </p>
+                    <ul>
+                        <li><strong>Free Tier:</strong> Basic study planning and progress tracking</li>
+                        <li><strong>Premium ($9.99/mo):</strong> AI scheduling, calendar sync, unlimited quizzes</li>
+                        <li><strong>Pro ($19.99/mo):</strong> Advanced analytics, custom study paths, priority support</li>
+                        <li><strong>B2B/University:</strong> Site licenses and institutional partnerships</li>
+                    </ul>
+                    <p>
+                        Projected revenue: $50K in Year 1, $500K in Year 2, $2M in Year 3 based on conservative conversion rates of 10% free-to-paid.
+                    </p>
+                </div>
+
+                <!-- Seeking -->
+                <div class="card section">
+                    <h2>🎯 What I'm Looking For</h2>
+                    <p>
+                        <strong style="font-size: 18px; color: #60a5fa;">Seeking: $150,000 seed funding</strong>
+                    </p>
+                    <p>
+                        I'm looking for investors, mentors, and strategic partners who can help me:
+                    </p>
+                    <ul>
+                        <li>Scale the product and expand the engineering team</li>
+                        <li>Navigate EdTech distribution channels and university partnerships</li>
+                        <li>Build marketing strategies for student acquisition</li>
+                        <li>Provide guidance on AI/ML best practices for education</li>
+                    </ul>
+                    <p>
+                        Open to conversations with angel investors, early-stage VCs, and EdTech-focused funds.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Sidebar Column -->
+            <aside class="sidebar-column">
+                
+                <!-- Founder Card -->
+                <div class="card founder-card">
+                    <div class="avatar">AL</div>
+                    <div class="founder-name">Alex Lee</div>
+                    <div class="founder-role">Founder & CEO</div>
+                    <p class="founder-bio">
+                        Former software engineer with 5 years in EdTech. Built this after struggling through university STEM courses myself. Passionate about making education accessible and personalized for everyone.
+                    </p>
+                    <div class="social-links">
+                        <div class="social-btn" title="LinkedIn">💼</div>
+                        <div class="social-btn" title="Twitter">🐦</div>
+                        <div class="social-btn" title="Email">✉️</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary">💬 Contact Me</button>
+                        <button class="btn btn-secondary">🔖 Save Idea</button>
+                    </div>
+                </div>
+
+                <!-- Key Info -->
+                <div class="card info-card">
+                    <h3>📋 Key Information</h3>
+                    <div class="metrics-list">
+                        <div class="metric-item">
+                            <span class="metric-label">Stage</span>
+                            <span class="metric-value">Pre-seed</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Seeking</span>
+                            <span class="metric-value">$150K</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Valuation</span>
+                            <span class="metric-value">$1.5M</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Team Size</span>
+                            <span class="metric-value">1 founder</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Launch Target</span>
+                            <span class="metric-value">Q2 2026</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Location</span>
+                            <span class="metric-value">San Francisco</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documents -->
+                <div class="card info-card">
+                    <h3>📄 Documents</h3>
+                    <div class="documents-list">
+                        <div class="doc-item">
+                            <div class="doc-icon">📊</div>
+                            <div class="doc-info">
+                                <div class="doc-name">Pitch Deck</div>
+                                <div class="doc-size">2.4 MB · PDF</div>
+                            </div>
+                        </div>
+                        <div class="doc-item">
+                            <div class="doc-icon">📈</div>
+                            <div class="doc-info">
+                                <div class="doc-name">Market Research</div>
+                                <div class="doc-size">1.8 MB · PDF</div>
+                            </div>
+                        </div>
+                        <div class="doc-item">
+                            <div class="doc-icon">💰</div>
+                            <div class="doc-info">
+                                <div class="doc-name">Financial Projections</div>
+                                <div class="doc-size">1.1 MB · XLSX</div>
+                            </div>
+                        </div>
+                        <div class="doc-item">
+                            <div class="doc-icon">🎨</div>
+                            <div class="doc-info">
+                                <div class="doc-name">Product Demo</div>
+                                <div class="doc-size">Video · 3 min</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

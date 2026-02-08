@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Activities - StartWise</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", sans-serif;
+      }
+
+      html,
+      body {
+        background: #f5f7fa;
+        min-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      /* App Layout */
+      .app {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 260px;
+        min-width: 260px;
+        background: #ffffff;
+        color: #1e293b;
+        padding: 32px 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-right: 1px solid #e2e8f0;
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .logo {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 40px;
+        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.5px;
+      }
+
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .nav a {
+        display: flex;
+        align-items: center;
+        padding: 14px 18px;
+        color: #64748b;
+        font-size: 15px;
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        position: relative;
+        font-weight: 500;
+      }
+
+      .nav a::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 0;
+        background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+        border-radius: 0 3px 3px 0;
+        transition: height 0.3s ease;
+      }
+
+      .nav a:hover {
+        color: #1e293b;
+        background: rgba(96, 165, 250, 0.1);
+      }
+
+      .nav a.active {
+        color: #1e293b;
+        font-weight: 600;
+        background: rgba(96, 165, 250, 0.15);
+      }
+
+      .nav a.active::before {
+        height: 70%;
+      }
+
+      .new-idea-btn {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        border: none;
+        padding: 16px 24px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+      }
+
+      .new-idea-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+      }
+
+      /* Main Content */
+      .content {
+        flex: 1;
+        margin-left: 260px;
+        padding: 40px 48px;
+        overflow-y: auto;
+        background: #f5f7fa;
+        min-height: 100vh;
+      }
+
+      /* Topbar */
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 36px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .topbar h1 {
+        font-size: 36px;
+        font-weight: 700;
+        color: #1e293b;
+      }
+
+      .user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        color: #334155;
+        background: #f1f5f9;
+        padding: 12px 20px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        font-weight: 500;
+      }
+
+      /* Section Header */
+      .section-header {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 32px;
+        margin-bottom: 32px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+
+      .section-header h2 {
+        font-size: 26px;
+        color: #1e293b;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .section-subtitle {
+        color: #64748b;
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      /* Activities Grid */
+      .activities-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 28px;
+        margin-bottom: 32px;
+      }
+
+      .activity-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 32px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 480px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+
+      .activity-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+
+      .activity-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(96, 165, 250, 0.3);
+        background: #f8fafc;
+      }
+
+      .activity-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .activity-icon {
+        width: 68px;
+        height: 68px;
+        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 34px;
+        margin-bottom: 20px;
+      }
+
+      .activity-card h3 {
+        font-size: 20px;
+        margin-bottom: 12px;
+        color: #1e293b;
+        font-weight: 700;
+      }
+
+      .activity-card p {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.7;
+        margin-bottom: 10px;
+      }
+
+      .activity-content {
+        flex: 1;
+      }
+
+      .activity-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+        font-size: 14px;
+      }
+
+      .activity-date {
+        color: #60a5fa;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .activity-participants {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 13px;
+      }
+
+      .activity-type {
+        display: inline-block;
+        padding: 7px 14px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 14px;
+      }
+
+      .type-networking {
+        background: rgba(251, 146, 60, 0.15);
+        color: #fb923c;
+        border: 1px solid rgba(251, 146, 60, 0.3);
+      }
+
+      .type-workshop {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+
+      .type-pitch {
+        background: rgba(236, 72, 153, 0.15);
+        color: #f472b6;
+        border: 1px solid rgba(236, 72, 153, 0.3);
+      }
+
+      .type-coaching {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+      }
+
+      .type-investor {
+        background: rgba(168, 85, 247, 0.15);
+        color: #c084fc;
+        border: 1px solid rgba(168, 85, 247, 0.3);
+      }
+
+      /* Register Button */
+      .register-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        border: none;
+        padding: 14px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 18px;
+      }
+
+      .register-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .app {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+          min-width: 100%;
+        }
+
+        .content {
+          padding: 24px;
+        }
+
+        .topbar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+        }
+
+        .activities-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div>
+          <h2 class="logo">StartWise</h2>
+
+          <nav class="nav">
+            <a href="index.html">📊 Dashboard</a>
+            <a href="Activities.html" class="active">🎯 Activities</a>
+            <a href="Leaderboards.html">🏆 Leaderboards</a>
+            <a href="HistoryPage.html">💡 My Ideas</a>
+            <a href="SeekHelp.html">👨‍🏫 Coaches</a>
+            <a href="GoPublic.html">💰 Investors</a>
+          </nav>
+        </div>
+
+        <button class="new-idea-btn" onclick="location.href = 'index.html'">
+          + New Idea
+        </button>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="content">
+        <header class="topbar">
+          <h1>🎯 Upcoming Activities</h1>
+          <div class="user">🔔 <span style="font-weight: 600">User</span></div>
+        </header>
+
+        <!-- Section Header -->
+        <div class="section-header">
+          <h2>Connect, Learn & Grow Your Startup</h2>
+          <p class="section-subtitle">
+            Join our community events to network with investors, access expert
+            coaching, and connect with fellow entrepreneurs. Get the guidance
+            and funding you need to turn your idea into reality.
+          </p>
+        </div>
+
+        <!-- Activities Grid -->
+        <div class="activities-grid">
+          <!-- Activity 1 -->
+          <div class="activity-card" onclick="registerActivity(1)">
+            <div class="activity-icon">🚀</div>
+            <span class="activity-type type-pitch">Pitch Event</span>
+            <div class="activity-content">
+              <h3>Online Hackathon</h3>
+              <p>
+                Present your innovative idea in our Online Hackthon while
+                getting real-time feedback and potential funding commitments.
+              </p>
+              <p>
+                <strong>Benefits:</strong> bonuses, networking, expert feedback
+              </p>
+            </div>
+            <div class="activity-meta">
+              <span class="activity-date">📅 Feb 15, 2026 • 6:00 PM</span>
+              <span class="activity-participants">24 Registered</span>
+            </div>
+            <button class="register-btn">Register Now</button>
+          </div>
+
+          <!-- Activity 2 -->
+          <div class="activity-card" onclick="registerActivity(2)">
+            <div class="activity-icon">💡</div>
+            <span class="activity-type type-workshop">Workshop</span>
+            <div class="activity-content">
+              <h3>Co-Founder Match</h3>
+              <p>
+                Collaborate with someone with complementary skills or resources.
+                Start your businesses together!
+              </p>
+              <p>
+                <strong>Opportunity:</strong> Find a like-minded Co-Founder 
+              </p>
+            </div>
+            <div class="activity-meta">
+              <span class="activity-date">📅 Feb 25, 2026 • 2:00 PM</span>
+              <span class="activity-participants">32 Registered</span>
+            </div>
+            <button class="register-btn">Register Now</button>
+          </div>
+
+          <!-- Activity 3 -->
+          <div class="activity-card" onclick="registerActivity(3)">
+            <div class="activity-icon">💰</div>
+            <span class="activity-type type-investor">Investor Meet</span>
+            <div class="activity-content">
+              <h3>Investor Showcase</h3>
+              <p>
+                Meet angel investors and VCs actively seeking promising
+                early-stage startups. Schedule 1-on-1 meetings and pitch your
+                idea.
+              </p>
+              <p>
+                <strong>Attending:</strong> 15+ investors, $2M+ in available
+                funding
+              </p>
+            </div>
+            <div class="activity-meta">
+              <span class="activity-date">📅 Mar 5, 2026 • 10:00 AM</span>
+              <span class="activity-participants">15 Investors</span>
+            </div>
+            <button class="register-btn">Register Now</button>
+          </div>
+
+          <!-- Activity 4 -->
+          <div class="activity-card" onclick="registerActivity(4)">
+            <div class="activity-icon">📊</div>
+            <span class="activity-type type-workshop">Bootcamp</span>
+            <div class="activity-content">
+              <h3>Market Analysis Bootcamp</h3>
+              <p>
+                Deep dive into competitive analysis, customer research, and
+                market positioning. Learn to validate your business idea with
+                data.
+              </p>
+              <p><strong>Duration:</strong> 3 hours intensive session</p>
+            </div>
+            <div class="activity-meta">
+              <span class="activity-date">📅 Mar 10, 2026 • 1:00 PM</span>
+              <span class="activity-participants">28 Registered</span>
+            </div>
+            <button class="register-btn">Register Now</button>
+          </div>
+
+          <!-- Activity 5 -->
+          <div class="activity-card" onclick="registerActivity(5)">
+            <div class="activity-icon">🎓</div>
+            <span class="activity-type type-coaching">Coaching</span>
+            <div class="activity-content">
+              <h3>Expert Coach Office Hours</h3>
+              <p>
+                Book 1-on-1 sessions with experienced startup coaches. Get
+                personalized guidance on strategy, product, marketing, and
+                fundraising.
+              </p>
+              <p>
+                <strong>Coaches:</strong> 8 experts across different industries
+              </p>
+            </div>
+            <div class="activity-meta">
+              <span class="activity-date">📅 Every Friday • Flexible</span>
+              <span class="activity-participants">12 Slots Left</span>
+            </div>
+            <button class="register-btn">Book Session</button>
+          </div>
+
+          <!-- Activity 6 -->
+          <div class="activity-card" onclick="registerActivity(6)">
+            <div class="activity-icon">🤝</div>
+            <span class="activity-type type-networking">Networking</span>
+            <div class="activity-content">
+              <h3>Entrepreneur Networking Mixer</h3>
+              <p>
+                Connect with like-minded entrepreneurs, share experiences, and
+                build valuable relationships. Casual evening with refreshments.
+              </p>
+              <p>
+                <strong>Format:</strong> Speed networking + open socializing
+              </p>
+            </div>
+            <div class="activity-meta">
+              <span class="activity-date">📅 Mar 18, 2026 • 7:00 PM</span>
+              <span class="activity-participants">45 Registered</span>
+            </div>
+            <button class="register-btn">Register Now</button>
+          </div>
+
+          <!-- Activity 7 -->
+          <div class="activity-card" onclick="registerActivity(7)">
+            <div class="activity-icon">💻</div>
+            <span class="activity-type type-workshop">Workshop</span>
+            <div class="activity-content">
+              <h3>Digital Marketing Masterclass</h3>
+              <p>
+                Master social media marketing, SEO, content strategy, and paid
+                advertising. Practical sessions with real campaign examples.
+              </p>
+              <p><strong>Includes:</strong> Marketing toolkit and templates</p>
+            </div>
+            <div class="activity-meta">
+              <span class="activity-date">📅 Mar 22, 2026 • 3:00 PM</span>
+              <span class="activity-participants">38 Registered</span>
+            </div>
+            <button class="register-btn">Register Now</button>
+          </div>
+
+          <!-- Activity 8 -->
+          <div class="activity-card" onclick="registerActivity(8)">
+            <div class="activity-icon">🎯</div>
+            <span class="activity-type type-pitch">Demo Day</span>
+            <div class="activity-content">
+              <h3>Startup Demo Day</h3>
+              <p>
+                Showcase your MVP or prototype to potential investors,
+                customers, and partners. Live product demonstrations and Q&A
+                sessions.
+              </p>
+              <p>
+                <strong>Audience:</strong> 100+ attendees including investors
+              </p>
+            </div>
+            <div class="activity-meta">
+              <span class="activity-date">📅 Apr 2, 2026 • 5:00 PM</span>
+              <span class="activity-participants">18 Startups</span>
+            </div>
+            <button class="register-btn">Apply to Present</button>
+          </div>
+
+          <!-- Activity 9 -->
+          <div class="activity-card" onclick="registerActivity(9)">
+            <div class="activity-icon">📈</div>
+            <span class="activity-type type-workshop">Workshop</span>
+            <div class="activity-content">
+              <h3>Financial Planning for Startups</h3>
+              <p>
+                Learn budgeting, financial forecasting, and fundraising
+                strategies. Understand cap tables, equity, and investor terms.
+              </p>
+              <p><strong>Led by:</strong> CFOs and financial advisors</p>
+            </div>
+            <div class="activity-meta">
+              <span class="activity-date">📅 Apr 8, 2026 • 11:00 AM</span>
+              <span class="activity-participants">22 Registered</span>
+            </div>
+            <button class="register-btn">Register Now</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      function registerActivity(activityId) {
+        alert(
+          `Registration for Activity ${activityId} initiated! In the full version, this would show a registration form with event details, payment options (if any), and confirmation.`,
+        );
+      }
+    </script>
+  </body>
+</html>

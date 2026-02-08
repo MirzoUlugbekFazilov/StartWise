@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Startup Diagnostic Report</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        }
+
+        html, body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: #ffffff;
+            color: #1e293b;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            color: #64748b;
+            font-size: 15px;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav a:hover {
+            color: #1e293b;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .nav a.active {
+            color: #1e293b;
+            font-weight: 600;
+            background: rgba(96, 165, 250, 0.15);
+        }
+
+        .new-idea-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .new-idea-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px 48px;
+            overflow-y: auto;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 36px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .topbar h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        .card {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 32px;
+            margin-bottom: 28px;
+        }
+
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .card h4 {
+            font-size: 18px;
+            color: #334155;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .report-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .report-box p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 8px;
+        }
+
+        .report-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .report-box strong {
+            color: #1e293b;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        .report-table th,
+        .report-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        .report-table th {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .report-table td {
+            color: #64748b;
+        }
+
+        .score-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .score-list li {
+            padding: 12px 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                min-width: 100%;
+                height: auto;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="logo">StartWise</h2>
+            <nav class="nav">
+                <a href="index.html">Dashboard</a>
+                <a href="activities.html">Activities</a>
+                <a>My Ideas</a>
+                <a>Explore</a>
+                <a>Coaches</a>
+                <a>Investors</a>
+            </nav>
+        </div>
+        <button class="new-idea-btn">+ New Idea</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+
+        <header class="topbar">
+            <div>
+                <h1>Startup Diagnostic Report</h1>
+                <p class="subtitle">Generated: 2024-01-15 · Valid for: 90 days · Report ID: #SR-2024-001-XYZ</p>
+            </div>
+        </header>
+
+        <!-- SECTION 1: EXECUTIVE SUMMARY -->
+        <section class="card">
+            <h3>Section 1: Executive Summary</h3>
+
+            <div class="report-box">
+                <p><strong>Diagnosis:</strong> 🟡 Grade B+ (7.2 / 10) — Quality Project, Launch After Optimization</p>
+                <p><strong>Core Strengths:</strong> Strong execution capability (7.5/10), high technical feasibility</p>
+                <p><strong>Critical Weakness:</strong> Unvalidated business model (5.5/10), intense market competition</p>
+                <p><strong>Key Window:</strong> Must complete payment validation within 60 days</p>
+                <p><strong>Funding Advice:</strong> Angel round $300K–$800K · Valuation $3M–$5M</p>
+                <p><strong>Recommended Accelerators:</strong> YC, MiraclePlus, Sequoia Seed</p>
+            </div>
+        </section>
+
+        <!-- SECTION 2: DIMENSIONAL DEEP-DIVE -->
+        <section class="card">
+            <h3>Section 2: Dimensional Deep-Dive</h3>
+
+            <h4>2.1 Team Fit — Score: 7.5 / 10 ⭐</h4>
+            <table class="report-table">
+                <tr>
+                    <th>Sub-dimension</th>
+                    <th>Score</th>
+                    <th>Weight</th>
+                    <th>Diagnosis</th>
+                    <th>Evidence</th>
+                </tr>
+                <tr>
+                    <td>Founder-Market Fit</td>
+                    <td>8.0</td>
+                    <td>30%</td>
+                    <td>Strong</td>
+                    <td>3 years industry experience</td>
+                </tr>
+                <tr>
+                    <td>Team Complementarity</td>
+                    <td>7.0</td>
+                    <td>25%</td>
+                    <td>Moderately Strong</td>
+                    <td>Missing CTO</td>
+                </tr>
+                <tr>
+                    <td>Execution Track Record</td>
+                    <td>8.5</td>
+                    <td>25%</td>
+                    <td>Strong</td>
+                    <td>MVP in 3 months</td>
+                </tr>
+                <tr>
+                    <td>Commitment Level</td>
+                    <td>6.5</td>
+                    <td>20%</td>
+                    <td>Moderate</td>
+                    <td>Equity split needs work</td>
+                </tr>
+            </table>
+
+            <p class="subtitle" style="margin-top:12px;">
+                ⚠️ Risks: Key person risk, equity split imbalance.  
+                ✅ Strategy: Leverage industry network, hire CTO within 90 days.
+            </p>
+
+            <h4 style="margin-top:20px;">2.2 Market Attractiveness — Score: 6.0 / 10</h4>
+            <div class="report-box">
+                <p><strong>Pain Intensity:</strong> 7.0 — Efficiency improvement, not mission-critical</p>
+                <p><strong>Market Size:</strong> TAM $2B, SAM $200M</p>
+                <p><strong>Growth:</strong> 12% CAGR</p>
+                <p><strong>Willingness to Pay:</strong> Unproven, likely &lt;$50/month</p>
+            </div>
+
+            <div class="report-box">
+                <p><strong>🔴 Fatal Assumption:</strong> “SMBs will pay $100+/month”</p>
+                <p>Current evidence: 20 surveys, 0 payments</p>
+                <p>Validation target: 10+ paying customers, LTV &gt; $300</p>
+                <p>Deadline: 60 days</p>
+            </div>
+
+            <h4 style="margin-top:20px;">2.3 Feasibility — Score: 7.0 / 10</h4>
+            <table class="report-table">
+                <tr>
+                    <th>Module</th>
+                    <th>Status</th>
+                    <th>Risk</th>
+                    <th>Recommendation</th>
+                </tr>
+                <tr>
+                    <td>Core Algorithm</td>
+                    <td>Self-developed</td>
+                    <td>🟢 Low</td>
+                    <td>Apply for patent</td>
+                </tr>
+                <tr>
+                    <td>Frontend</td>
+                    <td>Outsourced</td>
+                    <td>🟡 Medium</td>
+                    <td>Bring in-house</td>
+                </tr>
+                <tr>
+                    <td>Infrastructure</td>
+                    <td>AWS $200/mo</td>
+                    <td>🟢 Low</td>
+                    <td>Optimize costs</td>
+                </tr>
+                <tr>
+                    <td>Data Compliance</td>
+                    <td>No GDPR</td>
+                    <td>🔴 High</td>
+                    <td>Immediate fix</td>
+                </tr>
+            </table>
+
+            <div class="report-box">
+                <p><strong>Burn Projection:</strong></p>
+                <p>Month 1–3: $15K/mo</p>
+                <p>Month 4–6: $35K/mo</p>
+                <p>Month 7–9: $55K/mo</p>
+                <p><strong>Recommended Raise:</strong> $400K</p>
+            </div>
+
+            <h4 style="margin-top:20px;">2.4 Business Model — Score: 5.5 / 10 ⚠️</h4>
+            <div class="report-box">
+                <p>🔴 Weak channels, unvalidated revenue model, high CAC risk</p>
+                <p><strong>Recommendation:</strong> Freemium + $29/mo, usage-based pricing, PLG growth</p>
+            </div>
+
+            <h4 style="margin-top:20px;">2.5 Competitive Moat — Score: 4.0 / 10 🔴</h4>
+            <div class="report-box">
+                <p>Short-term: Vertical focus, case studies → Moat 2 → 4</p>
+                <p>Mid-term: Data flywheel, network effects → Moat 4 → 6</p>
+                <p>Long-term: Brand + ecosystem → Moat 6 → 8</p>
+            </div>
+        </section>
+
+        <!-- SECTION 3: RISK HEATMAP -->
+        <section class="card">
+            <h3>Section 3: Risk Heatmap</h3>
+
+            <ul class="score-list">
+                <li>🔴 R1: Payment willingness wrong — Risk 9/10</li>
+                <li>🔴 R4: Missing tech co-founder — Risk 8/10</li>
+                <li>🟡 R2: Cash flow break</li>
+                <li>🟡 R5: Giant copies product</li>
+                <li>🟢 R3: Team conflict</li>
+                <li>🟢 R6: Policy compliance</li>
+            </ul>
+        </section>
+
+        <!-- SECTION 4: ASSUMPTION VALIDATION -->
+        <section class="card">
+            <h3>Section 4: Assumption Validation</h3>
+
+            <table class="report-table">
+                <tr>
+                    <th>ID</th>
+                    <th>Assumption</th>
+                    <th>Status</th>
+                    <th>Deadline</th>
+                </tr>
+                <tr>
+                    <td>A1</td>
+                    <td>SMBs pay $50+/month</td>
+                    <td>🟡 In Progress</td>
+                    <td>D+30</td>
+                </tr>
+                <tr>
+                    <td>A2</td>
+                    <td>30% efficiency gain</td>
+                    <td>🟡 In Progress</td>
+                    <td>D+45</td>
+                </tr>
+                <tr>
+                    <td>A3</td>
+                    <td>CAC &lt; $100</td>
+                    <td>🔴 Not Started</td>
+                    <td>D+60</td>
+                </tr>
+                <tr>
+                    <td>A4</td>
+                    <td>Churn &lt; 5%</td>
+                    <td>🔴 Not Started</td>
+                    <td>D+90</td>
+                </tr>
+                <tr>
+                    <td>A5</td>
+                    <td>Scales to 100K users</td>
+                    <td>🟡 In Progress</td>
+                    <td>D+60</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- SECTION 5: 90-DAY ROADMAP -->
+        <section class="card">
+            <h3>Section 5: 90-Day Action Roadmap</h3>
+
+            <ul class="score-list">
+                <li>Week 1–2: Hire CTO, fix GDPR, equity vesting</li>
+                <li>Week 3–4: Fake door test, sign 3 pilots</li>
+                <li>Week 5–8: Improve MVP, reduce CAC, prep angel round</li>
+                <li>Week 9–12: Onboard CTO, validate LTV/CAC &gt; 3, apply to accelerators</li>
+            </ul>
+        </section>
+
+        <!-- SECTION 6: RESOURCE MATCHING -->
+        <section class="card">
+            <h3>Section 6: Resource Matching</h3>
+
+            <h4>Accelerators</h4>
+            <ul class="score-list">
+                <li>Y Combinator — 85% — 🟡 Missing CTO</li>
+                <li>MiraclePlus — 90% — 🟢 Qualified</li>
+                <li>Sequoia Seed — 75% — 🟡 Needs validation</li>
+                <li>Sinovation — 70% — 🔴 Not matched</li>
+            </ul>
+
+            <h4 style="margin-top:12px;">Recommended Advisors</h4>
+            <ul class="score-list">
+                <li>Ex-unicorn CTO — Architecture & hiring</li>
+                <li>SaaS Growth Lead — GTM strategy</li>
+                <li>Angel Investor — Fundraising & pitch</li>
+                <li>Industry VP — Customer access</li>
+            </ul>
+        </section>
+
+    </main>
+</div>
+
+</body>
+</html>

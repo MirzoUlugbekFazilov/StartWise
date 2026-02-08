@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alex Lee - Coach Profile - StartWise</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        }
+
+        html, body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* App Layout */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: #ffffff;
+            color: #1e293b;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            color: #64748b;
+            font-size: 15px;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 0 3px 3px 0;
+            transition: height 0.3s ease;
+        }
+
+        .nav a:hover {
+            color: #1e293b;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .nav a.active {
+            color: #1e293b;
+            font-weight: 600;
+            background: rgba(96, 165, 250, 0.15);
+        }
+
+        .nav a.active::before {
+            height: 70%;
+        }
+
+        .new-idea-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .new-idea-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px 48px;
+            overflow-y: auto;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #60a5fa;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            color: #93c5fd;
+        }
+
+        /* Profile Layout */
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 32px;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 40px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .avatar-large {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .profile-info h1 {
+            font-size: 36px;
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .profile-title {
+            font-size: 18px;
+            color: #60a5fa;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 13px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            background: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            font-weight: 600;
+        }
+
+        /* Content Section */
+        .content-section {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .content-section h2 {
+            font-size: 24px;
+            color: #1e293b;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .content-section h3 {
+            font-size: 18px;
+            color: #1e293b;
+            margin: 24px 0 12px;
+            font-weight: 700;
+        }
+
+        .content-section h3:first-of-type {
+            margin-top: 0;
+        }
+
+        .content-section p {
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .content-section ul {
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.8;
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .content-section li {
+            margin-bottom: 8px;
+        }
+
+        /* Sidebar Cards */
+        .sidebar-card {
+            background: #ffffff;
+            backdrop-filter: blur(20px);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-card h3 {
+            font-size: 18px;
+            color: #1e293b;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #64748b;
+        }
+
+        .stat-value {
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .rating-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 32px;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .stars {
+            color: #fbbf24;
+            font-size: 24px;
+        }
+
+        .rating-breakdown {
+            margin-top: 16px;
+        }
+
+        .rating-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .rating-label {
+            color: #64748b;
+            min-width: 60px;
+        }
+
+        .rating-bar {
+            flex: 1;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .rating-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 4px;
+        }
+
+        .rating-count {
+            color: #64748b;
+            min-width: 30px;
+            text-align: right;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .content {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="logo">StartWise</h2>
+
+            <nav class="nav">
+                <a href="index.html">📊 Dashboard</a>
+                <a href="Activities.html">🎯 Activities</a>
+                <a href="Leaderboards.html">🏆 Leaderboards</a>
+                <a href="HistoryPage.html">💡 My Ideas</a>
+                <a href="SeekHelp.html" class="active">👨‍🏫 Coaches</a>
+                <a href="GoPublic.html">💰 Investors</a>
+            </nav>
+        </div>
+
+        <button class="new-idea-btn" onclick="location.href='index.html'">+ New Idea</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+
+        <a href="SeekHelp.html" class="back-btn">← Back to Coaches</a>
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="avatar-large">AL</div>
+            <div class="profile-info">
+                <h1>Alex Lee</h1>
+                <div class="profile-title">DevOps Engineer & System Architect</div>
+                <div class="tags">
+                    <div class="tag">System Design</div>
+                    <div class="tag">Scalability</div>
+                    <div class="tag">Cloud Infrastructure</div>
+                    <div class="tag">DevOps</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Layout -->
+        <div class="profile-layout">
+
+            <!-- Main Content -->
+            <div>
+                <div class="content-section">
+                    <h2>About Me</h2>
+                    <p>
+                        I'm a seasoned DevOps engineer with over 10 years of experience building and scaling infrastructure for high-growth startups and enterprises. I specialize in helping early-stage companies design robust, scalable systems that can grow from prototype to production without breaking the bank.
+                    </p>
+                    <p>
+                        My passion is working with technical founders who need guidance on architecture decisions, cloud infrastructure setup, and DevOps best practices. I've helped dozens of startups avoid common pitfalls and build systems that scale efficiently.
+                    </p>
+                </div>
+
+                <div class="content-section">
+                    <h2>Expertise</h2>
+                    
+                    <h3>System Design & Architecture</h3>
+                    <p>
+                        I help startups design scalable, maintainable systems from the ground up. Whether you're building a microservices architecture or need to refactor a monolith, I can guide you through the technical decisions that will impact your growth.
+                    </p>
+
+                    <h3>Cloud Infrastructure</h3>
+                    <p>
+                        Expert in AWS, Google Cloud, and Azure. I'll help you choose the right cloud provider, set up cost-effective infrastructure, and implement best practices for security, monitoring, and disaster recovery.
+                    </p>
+
+                    <h3>DevOps & CI/CD</h3>
+                    <p>
+                        I specialize in setting up automated deployment pipelines, containerization with Docker and Kubernetes, and implementing modern DevOps practices that enable your team to ship faster with confidence.
+                    </p>
+
+                    <h3>Performance & Scalability</h3>
+                    <p>
+                        I can help you identify bottlenecks, optimize database queries, implement caching strategies, and design systems that can handle 10x or 100x growth without major rewrites.
+                    </p>
+                </div>
+
+                <div class="content-section">
+                    <h2>Experience Highlights</h2>
+                    <ul>
+                        <li><strong>TechCorp (2020-2024):</strong> Lead DevOps Engineer - Scaled infrastructure from 100K to 10M users, reduced cloud costs by 40%</li>
+                        <li><strong>StartupXYZ (2018-2020):</strong> Senior Infrastructure Engineer - Built entire cloud infrastructure and CI/CD pipelines from scratch</li>
+                        <li><strong>CloudSolutions (2015-2018):</strong> DevOps Consultant - Helped 20+ startups migrate to cloud and implement modern DevOps practices</li>
+                        <li><strong>Enterprise Inc (2013-2015):</strong> Systems Engineer - Managed large-scale distributed systems and infrastructure automation</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h2>How I Can Help</h2>
+                    <ul>
+                        <li>Architecture review and recommendations</li>
+                        <li>Cloud infrastructure setup and optimization</li>
+                        <li>DevOps pipeline implementation</li>
+                        <li>Performance audits and optimization</li>
+                        <li>Security best practices and compliance</li>
+                        <li>Cost optimization strategies</li>
+                        <li>Technical team mentoring</li>
+                        <li>Technology stack selection</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h2>Coaching Style</h2>
+                    <p>
+                        I believe in practical, hands-on guidance. During our sessions, I'll work directly on your problems, review your code and architecture, and provide actionable recommendations you can implement immediately. I focus on teaching principles and best practices so you can make informed decisions independently.
+                    </p>
+                    <p>
+                        I'm direct and honest about technical tradeoffs. I'll help you understand not just what to do, but why, and what the implications are for your specific situation and stage of growth.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div>
+                <!-- Action Buttons -->
+                <div class="sidebar-card">
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="alert('Chat feature coming soon!')">💬 Start Chat</button>
+                        <button class="btn btn-secondary" onclick="alert('Booking feature coming soon!')">📅 Book Session</button>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="sidebar-card">
+                    <h3>Stats</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Experience</span>
+                        <span class="stat-value">10+ Years</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Sessions</span>
+                        <span class="stat-value">156</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Response Time</span>
+                        <span class="stat-value">< 2 hours</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Success Rate</span>
+                        <span class="stat-value">98%</span>
+                    </div>
+                </div>
+
+                <!-- Rating -->
+                <div class="sidebar-card">
+                    <h3>Rating</h3>
+                    <div class="rating-display">
+                        <span>4.9</span>
+                        <span class="stars">⭐⭐⭐⭐⭐</span>
+                    </div>
+                    <p style="color: #64748b; font-size: 14px; margin-bottom: 16px;">Based on 127 reviews</p>
+                    
+                    <div class="rating-breakdown">
+                        <div class="rating-row">
+                            <span class="rating-label">5 stars</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: 88%;"></div>
+                            </div>
+                            <span class="rating-count">112</span>
+                        </div>
+                        <div class="rating-row">
+                            <span class="rating-label">4 stars</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: 10%;"></div>
+                            </div>
+                            <span class="rating-count">12</span>
+                        </div>
+                        <div class="rating-row">
+                            <span class="rating-label">3 stars</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: 2%;"></div>
+                            </div>
+                            <span class="rating-count">2</span>
+                        </div>
+                        <div class="rating-row">
+                            <span class="rating-label">2 stars</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: 1%;"></div>
+                            </div>
+                            <span class="rating-count">1</span>
+                        </div>
+                        <div class="rating-row">
+                            <span class="rating-label">1 star</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: 0%;"></div>
+                            </div>
+                            <span class="rating-count">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Availability -->
+                <div class="sidebar-card">
+                    <h3>Availability</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Session Rate</span>
+                        <span class="stat-value">$150/hr</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Next Available</span>
+                        <span class="stat-value">Tomorrow</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Languages</span>
+                        <span class="stat-value">English, Mandarin</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>
