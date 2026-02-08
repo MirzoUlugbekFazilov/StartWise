@@ -1,0 +1,2384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - StartWise</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        }
+
+        html, body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: #ffffff;
+            color: #1e293b;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            color: #64748b;
+            font-size: 15px;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 0 3px 3px 0;
+            transition: height 0.3s ease;
+        }
+
+        .nav a:hover {
+            color: #1e293b;
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .nav a.active {
+            color: #1e293b;
+            font-weight: 600;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .nav a.active::before {
+            height: 70%;
+        }
+
+        .new-idea-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .new-idea-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px 48px;
+            overflow-y: auto;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        /* Topbar */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 36px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .topbar h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #334155;
+            background: #f1f5f9;
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-weight: 500;
+        }
+
+        /* Card */
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 32px;
+            margin-bottom: 28px;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .card h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: #64748b;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        /* Idea Input Section */
+        .idea-input-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .idea-input-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #14b8a6 100%);
+        }
+
+        .idea-textarea {
+            width: 100%;
+            min-height: 160px;
+            background: #f8fafc;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            padding: 20px;
+            color: #1e293b;
+            font-size: 15px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .idea-textarea:focus {
+            outline: none;
+            border-color: rgba(59, 130, 246, 0.5);
+            background: #ffffff;
+        }
+
+        .idea-textarea::placeholder {
+            color: #94a3b8;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .hint-text {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* Analysis Output Section */
+        .analysis-output {
+            display: none;
+        }
+
+        .analysis-output.visible {
+            display: block;
+        }
+
+        /* Score Display - Percentage Based */
+        .score-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding: 28px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+        }
+
+        .score-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #3b82f6 0deg,
+                #8b5cf6 calc(var(--score) * 3.6deg),
+                rgba(255,255,255,0.1) calc(var(--score) * 3.6deg)
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            --score: 72;
+        }
+
+        .score-circle-inner {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-value {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa 0%, #14b8a6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-percent {
+            font-size: 24px;
+            font-weight: 600;
+            color: #60a5fa;
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .score-info {
+            flex: 1;
+            margin-left: 32px;
+        }
+
+        .score-info h4 {
+            font-size: 24px;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .score-recommendation {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .score-recommendation.highly-recommended {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .score-recommendation.optimize {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .score-recommendation.validate {
+            background: rgba(249, 115, 22, 0.15);
+            color: #f97316;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+
+        .score-recommendation.pivot {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .score-meta {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* Dimension Scores - Percentage Based */
+        .dimensions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .dimension-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .dimension-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .dimension-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .dimension-score {
+            font-size: 22px;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+
+        .dimension-weight {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
+        .dimension-bar {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .dimension-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.8s ease;
+        }
+
+        .dimension-bar-fill.team { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .dimension-bar-fill.market { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+        .dimension-bar-fill.feasibility { background: linear-gradient(90deg, #14b8a6, #2dd4bf); }
+        .dimension-bar-fill.business { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .dimension-bar-fill.competitive { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+        .dimension-insight {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .dimension-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .dimension-tag.strength {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .dimension-tag.attention {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+        }
+
+        .dimension-tag.risk {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        /* Analysis Sections */
+        .analysis-section {
+            margin-bottom: 28px;
+        }
+
+        .analysis-section h4 {
+            font-size: 18px;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .analysis-section h4 span {
+            font-size: 20px;
+        }
+
+        /* Competitors Section */
+        .competitors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .competitor-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .competitor-card:hover {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .competitor-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .competitor-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .competitor-info h5 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .competitor-type {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .competitor-details {
+            margin-bottom: 12px;
+        }
+
+        .competitor-detail {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            padding: 6px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .competitor-detail:last-child {
+            border-bottom: none;
+        }
+
+        .competitor-detail-label {
+            color: #64748b;
+        }
+
+        .competitor-detail-value {
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .competitor-threat {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .competitor-threat.high {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .competitor-threat.medium {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+        }
+
+        .competitor-threat.low {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        /* Action Items */
+        .action-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .action-item:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .action-priority {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .action-priority.p0 { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .action-priority.p1 { background: rgba(249, 115, 22, 0.2); color: #f97316; }
+        .action-priority.p2 { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .action-priority.p3 { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+
+        .action-content {
+            flex: 1;
+        }
+
+        .action-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .action-description {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .action-timeline {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        /* Market Analysis */
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .market-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .market-card-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .market-card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .market-card-label {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Customer Segments */
+        .customer-segments {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .customer-segment {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .segment-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .segment-info {
+            flex: 1;
+        }
+
+        .segment-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .segment-description {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .segment-potential {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .segment-potential.high {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .segment-potential.medium {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+        }
+
+        /* Promotion Strategy - Enhanced */
+        .promotion-timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .promotion-timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #3b82f6 0%, #8b5cf6 33%, #14b8a6 66%, #22c55e 100%);
+            border-radius: 2px;
+        }
+
+        .promotion-step {
+            position: relative;
+            padding: 24px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .promotion-step:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateX(4px);
+        }
+
+        .promotion-step::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 28px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #3b82f6;
+            border: 4px solid #f5f7fa;
+        }
+
+        .promotion-step:nth-child(2)::before { background: #8b5cf6; }
+        .promotion-step:nth-child(3)::before { background: #14b8a6; }
+        .promotion-step:nth-child(4)::before { background: #22c55e; }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .step-phase {
+            font-size: 12px;
+            color: #60a5fa;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 4px;
+        }
+
+        .step-timeline-badge {
+            font-size: 12px;
+            color: #64748b;
+            padding: 4px 10px;
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .step-checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .step-checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #334155;
+        }
+
+        .step-checklist-item::before {
+            content: '✓';
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .step-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .step-action-tag {
+            padding: 8px 14px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #334155;
+            transition: all 0.3s;
+        }
+
+        .step-action-tag:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        /* Success Message */
+        .success-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            background: rgba(34, 197, 94, 0.9);
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .success-toast.visible {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Buttons */
+        .primary-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.5);
+        }
+
+        .secondary-btn {
+            background: #f1f5f9;
+            border: 1px solid #d1d5db;
+            color: #334155;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .secondary-btn:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.5);
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.visible {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 70px;
+            height: 70px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 24px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #1e293b;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .loading-subtext {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin-top: 24px;
+            overflow: hidden;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+
+        /* Chatbot Section */
+        .chatbot-section {
+            margin-top: 28px;
+        }
+
+        .chat-messages {
+            max-height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 4px;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 12px;
+            max-width: 85%;
+        }
+
+        .chat-message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .chat-message.ai {
+            align-self: flex-start;
+        }
+
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .chat-message.user .chat-avatar {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .chat-message.ai .chat-avatar {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .chat-bubble {
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .chat-message.user .chat-bubble {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-message.ai .chat-bubble {
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #1e293b;
+            background: #f8fafc;
+            transition: all 0.3s;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: rgba(59, 130, 246, 0.5);
+            background: #ffffff;
+        }
+
+        .chat-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .chat-send-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .chat-send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .chat-typing {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .chat-typing-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #94a3b8;
+            display: inline-block;
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+
+        .chat-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .chat-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-6px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                min-width: 100%;
+                height: auto;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 24px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .score-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .score-info {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+
+            .dimensions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .button-row button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="logo">StartWise</h2>
+
+            <nav class="nav">
+                <a href="index.html" class="active">📊 Dashboard</a>
+                <a href="Activities.html">🎯 Activities</a>
+                <a href="Leaderboards.html">🏆 Leaderboards</a>
+                <a href="HistoryPage.html">💡 My Ideas</a>
+                <a href="SeekHelp.html">👨‍🏫 Coaches</a>
+                <a href="GoPublic.html">💰 Investors</a>
+            </nav>
+        </div>
+
+        <button class="new-idea-btn" onclick="resetAnalysis()">+ New Idea</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+
+        <header class="topbar">
+            <h1>Idea Analysis Dashboard</h1>
+            <div class="user">
+                🔔 <span style="font-weight: 600;">Entrepreneur</span>
+            </div>
+        </header>
+
+        <!-- Idea Input Section -->
+        <section class="card idea-input-section" id="inputSection">
+            <h3>💡 Describe Your Business Idea</h3>
+            <p class="subtitle">
+                Tell us about your startup concept. Our AI will analyze your idea across 5 key dimensions and provide a comprehensive strategy including market analysis, competitor insights, target customers, and go-to-market plan.
+            </p>
+
+            <textarea
+                class="idea-textarea"
+                id="ideaInput"
+                placeholder="Example: I want to create an AI-powered platform that helps small business owners automate their social media marketing. The platform would analyze their business type, target audience, and competitors to generate personalized content calendars and automatically post to multiple platforms. Target customers are SMBs with 1-50 employees who don't have dedicated marketing teams..."
+            ></textarea>
+
+            <div class="input-actions">
+                <button class="analyze-btn" id="analyzeBtn" onclick="analyzeIdea()">
+                    <span>🔍</span> Analyze My Idea
+                </button>
+                <span class="hint-text">Press Ctrl+Enter to submit. Be specific about the problem, solution, and target customers.</span>
+            </div>
+        </section>
+
+        <!-- Analysis Output Section -->
+        <div class="analysis-output" id="analysisOutput">
+
+            <!-- Overall Score - Percentage Based -->
+            <section class="card">
+                <div class="score-header">
+                    <div class="score-circle" id="scoreCircle" style="--score: 72">
+                        <div class="score-circle-inner">
+                            <div class="score-value" id="overallScore">72<span class="score-percent">%</span></div>
+                            <div class="score-label">Potential Score</div>
+                        </div>
+                    </div>
+                    <div class="score-info">
+                        <h4 id="ideaTitle">AI Social Media Marketing Platform</h4>
+                        <div class="score-recommendation optimize" id="recommendation">
+                            🟡 OPTIMIZE & LAUNCH
+                        </div>
+                        <p class="score-meta">
+                            <span id="industry">Industry: SaaS / MarTech</span> ·
+                            <span id="stage">Stage: Pre-seed</span> ·
+                            <span id="confidence">Confidence: 78%</span>
+                        </p>
+                    </div>
+                </div>
+
+                <h3>📊 Dimension Scores (0-100%)</h3>
+                <div class="dimensions-grid">
+                    <div class="dimension-card">
+                        <div class="dimension-header">
+                            <span class="dimension-name">Team Fit</span>
+                            <span class="dimension-score" id="teamScore">75%</span>
+                        </div>
+                        <div class="dimension-weight">Weight: 40% · Contribution: 30%</div>
+                        <div class="dimension-bar">
+                            <div class="dimension-bar-fill team" id="teamBar" style="width: 75%"></div>
+                        </div>
+                        <p class="dimension-insight" id="teamInsight">Strong founder-market fit with relevant industry experience. Consider adding a technical co-founder to strengthen execution capability.</p>
+                        <span class="dimension-tag strength">Core Strength</span>
+                    </div>
+
+                    <div class="dimension-card">
+                        <div class="dimension-header">
+                            <span class="dimension-name">Market Attractiveness</span>
+                            <span class="dimension-score" id="marketScore">68%</span>
+                        </div>
+                        <div class="dimension-weight">Weight: 20% · Contribution: 13.6%</div>
+                        <div class="dimension-bar">
+                            <div class="dimension-bar-fill market" id="marketBar" style="width: 68%"></div>
+                        </div>
+                        <p class="dimension-insight" id="marketInsight">Growing $28B market with 18% CAGR. SMBs show clear demand but validate willingness to pay $50+/month.</p>
+                        <span class="dimension-tag attention">Needs Validation</span>
+                    </div>
+
+                    <div class="dimension-card">
+                        <div class="dimension-header">
+                            <span class="dimension-name">Feasibility</span>
+                            <span class="dimension-score" id="feasibilityScore">82%</span>
+                        </div>
+                        <div class="dimension-weight">Weight: 20% · Contribution: 16.4%</div>
+                        <div class="dimension-bar">
+                            <div class="dimension-bar-fill feasibility" id="feasibilityBar" style="width: 82%"></div>
+                        </div>
+                        <p class="dimension-insight" id="feasibilityInsight">MVP can be built in 8-12 weeks using existing APIs. Low regulatory risk. Estimated startup capital: $50K-$100K.</p>
+                        <span class="dimension-tag strength">Controllable</span>
+                    </div>
+
+                    <div class="dimension-card">
+                        <div class="dimension-header">
+                            <span class="dimension-name">Business Model</span>
+                            <span class="dimension-score" id="businessScore">65%</span>
+                        </div>
+                        <div class="dimension-weight">Weight: 15% · Contribution: 9.75%</div>
+                        <div class="dimension-bar">
+                            <div class="dimension-bar-fill business" id="businessBar" style="width: 65%"></div>
+                        </div>
+                        <p class="dimension-insight" id="businessInsight">SaaS subscription model viable. Target pricing $29-$99/month. Need to validate LTV/CAC > 3 with early customers.</p>
+                        <span class="dimension-tag attention">To Clarify</span>
+                    </div>
+
+                    <div class="dimension-card">
+                        <div class="dimension-header">
+                            <span class="dimension-name">Competitive Moat</span>
+                            <span class="dimension-score" id="competitiveScore">45%</span>
+                        </div>
+                        <div class="dimension-weight">Weight: 5% · Contribution: 2.25%</div>
+                        <div class="dimension-bar">
+                            <div class="dimension-bar-fill competitive" id="competitiveBar" style="width: 45%"></div>
+                        </div>
+                        <p class="dimension-insight" id="competitiveInsight">Crowded market with established players. Build moat through vertical focus, data flywheel, and SMB-specific features.</p>
+                        <span class="dimension-tag risk">Build Later</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Competitors Analysis -->
+            <section class="card analysis-section">
+                <h4><span>⚔️</span> Competitor Analysis</h4>
+                <div class="competitors-grid" id="competitorsGrid">
+                    <div class="competitor-card">
+                        <div class="competitor-header">
+                            <div class="competitor-logo">📱</div>
+                            <div class="competitor-info">
+                                <h5>Hootsuite</h5>
+                                <span class="competitor-type">Enterprise Social Management</span>
+                            </div>
+                        </div>
+                        <div class="competitor-details">
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Founded</span>
+                                <span class="competitor-detail-value">2008</span>
+                            </div>
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Funding</span>
+                                <span class="competitor-detail-value">$350M+</span>
+                            </div>
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Pricing</span>
+                                <span class="competitor-detail-value">$99-$739/mo</span>
+                            </div>
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Weakness</span>
+                                <span class="competitor-detail-value">Complex, expensive for SMBs</span>
+                            </div>
+                        </div>
+                        <span class="competitor-threat medium">Medium Threat</span>
+                    </div>
+
+                    <div class="competitor-card">
+                        <div class="competitor-header">
+                            <div class="competitor-logo">🎯</div>
+                            <div class="competitor-info">
+                                <h5>Buffer</h5>
+                                <span class="competitor-type">SMB Social Scheduling</span>
+                            </div>
+                        </div>
+                        <div class="competitor-details">
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Founded</span>
+                                <span class="competitor-detail-value">2010</span>
+                            </div>
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Funding</span>
+                                <span class="competitor-detail-value">$4M (Bootstrapped)</span>
+                            </div>
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Pricing</span>
+                                <span class="competitor-detail-value">$6-$120/mo</span>
+                            </div>
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Weakness</span>
+                                <span class="competitor-detail-value">No AI content generation</span>
+                            </div>
+                        </div>
+                        <span class="competitor-threat high">High Threat</span>
+                    </div>
+
+                    <div class="competitor-card">
+                        <div class="competitor-header">
+                            <div class="competitor-logo">🌱</div>
+                            <div class="competitor-info">
+                                <h5>Sprout Social</h5>
+                                <span class="competitor-type">Mid-Market Analytics</span>
+                            </div>
+                        </div>
+                        <div class="competitor-details">
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Founded</span>
+                                <span class="competitor-detail-value">2010</span>
+                            </div>
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Funding</span>
+                                <span class="competitor-detail-value">$110M (Public)</span>
+                            </div>
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Pricing</span>
+                                <span class="competitor-detail-value">$249-$499/mo</span>
+                            </div>
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Weakness</span>
+                                <span class="competitor-detail-value">Too expensive for small businesses</span>
+                            </div>
+                        </div>
+                        <span class="competitor-threat low">Low Threat</span>
+                    </div>
+
+                    <div class="competitor-card">
+                        <div class="competitor-header">
+                            <div class="competitor-logo">✨</div>
+                            <div class="competitor-info">
+                                <h5>Later</h5>
+                                <span class="competitor-type">Visual Content Planning</span>
+                            </div>
+                        </div>
+                        <div class="competitor-details">
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Founded</span>
+                                <span class="competitor-detail-value">2014</span>
+                            </div>
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Funding</span>
+                                <span class="competitor-detail-value">Acquired by Mavrck</span>
+                            </div>
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Pricing</span>
+                                <span class="competitor-detail-value">$18-$80/mo</span>
+                            </div>
+                            <div class="competitor-detail">
+                                <span class="competitor-detail-label">Weakness</span>
+                                <span class="competitor-detail-value">Instagram-focused, limited AI</span>
+                            </div>
+                        </div>
+                        <span class="competitor-threat medium">Medium Threat</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 16px; background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 10px;">
+                    <strong style="color: #2563eb;">💡 Competitive Advantage Opportunity:</strong>
+                    <p style="color: #64748b; margin-top: 8px; font-size: 14px;">Differentiate through AI-powered content generation, SMB-specific pricing ($29-49/mo), and industry-specific templates. Focus on "set and forget" automation that larger players don't prioritize.</p>
+                </div>
+            </section>
+
+            <!-- Market Analysis -->
+            <section class="card analysis-section">
+                <h4><span>📈</span> Market Analysis</h4>
+                <div class="market-grid" id="marketAnalysis">
+                    <div class="market-card">
+                        <div class="market-card-icon">🌍</div>
+                        <div class="market-card-value">$28B</div>
+                        <div class="market-card-label">Total Addressable Market</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="market-card-icon">🎯</div>
+                        <div class="market-card-value">$4.2B</div>
+                        <div class="market-card-label">Serviceable Market (SMB)</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="market-card-icon">📊</div>
+                        <div class="market-card-value">18%</div>
+                        <div class="market-card-label">Annual Growth Rate</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="market-card-icon">💰</div>
+                        <div class="market-card-value">$840M</div>
+                        <div class="market-card-label">Obtainable Market (Year 5)</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="market-card-icon">🏢</div>
+                        <div class="market-card-value">32M</div>
+                        <div class="market-card-label">US SMBs (Potential Users)</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Target Customers -->
+            <section class="card analysis-section">
+                <h4><span>👥</span> Target Customer Segments</h4>
+                <div class="customer-segments" id="customerSegments">
+                    <div class="customer-segment">
+                        <div class="segment-icon">🏪</div>
+                        <div class="segment-info">
+                            <div class="segment-name">Local Service Businesses</div>
+                            <div class="segment-description">Restaurants, salons, fitness studios, dental offices with 1-10 employees. Pain: No time for social media, need local visibility.</div>
+                        </div>
+                        <div class="segment-potential high">High Potential</div>
+                    </div>
+                    <div class="customer-segment">
+                        <div class="segment-icon">🛒</div>
+                        <div class="segment-info">
+                            <div class="segment-name">E-commerce Entrepreneurs</div>
+                            <div class="segment-description">Shopify/Etsy/Amazon sellers needing consistent content. Pain: Can't afford social media manager, need product promotion.</div>
+                        </div>
+                        <div class="segment-potential high">High Potential</div>
+                    </div>
+                    <div class="customer-segment">
+                        <div class="segment-icon">💼</div>
+                        <div class="segment-info">
+                            <div class="segment-name">Professional Services</div>
+                            <div class="segment-description">Consultants, coaches, real estate agents, lawyers. Pain: Need thought leadership content but no time to create.</div>
+                        </div>
+                        <div class="segment-potential medium">Medium Potential</div>
+                    </div>
+                    <div class="customer-segment">
+                        <div class="segment-icon">🏭</div>
+                        <div class="segment-info">
+                            <div class="segment-name">Small Agencies</div>
+                            <div class="segment-description">Marketing agencies with 2-10 clients. Pain: Need scalable content creation for multiple brands.</div>
+                        </div>
+                        <div class="segment-potential medium">Medium Potential</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Key Action Items -->
+            <section class="card analysis-section">
+                <h4><span>🎯</span> Priority Action Items</h4>
+                <div class="action-items" id="actionItems">
+                    <div class="action-item">
+                        <div class="action-priority p0">P0</div>
+                        <div class="action-content">
+                            <div class="action-title">Validate Payment Willingness</div>
+                            <div class="action-description">Conduct 30+ customer interviews with SMB owners. Use fake door tests (landing page with pricing) to measure conversion before building. Target: 100+ email signups, 10% willing to pre-pay.</div>
+                            <div class="action-timeline">⏱ Timeline: 30 days | Success Metric: 10+ pre-orders</div>
+                        </div>
+                    </div>
+                    <div class="action-item">
+                        <div class="action-priority p1">P1</div>
+                        <div class="action-content">
+                            <div class="action-title">Build MVP with Core Features</div>
+                            <div class="action-description">Focus on: (1) AI content generation for 3 industries, (2) Scheduling for Instagram + Facebook, (3) Basic analytics. Skip: Multi-user, advanced analytics, integrations.</div>
+                            <div class="action-timeline">⏱ Timeline: 60 days | Success Metric: Working product</div>
+                        </div>
+                    </div>
+                    <div class="action-item">
+                        <div class="action-priority p2">P2</div>
+                        <div class="action-content">
+                            <div class="action-title">Acquire First 20 Paying Customers</div>
+                            <div class="action-description">Offer 50% early-bird discount. Focus on one vertical (local restaurants). Get testimonials and case studies. Target LTV/CAC > 3.</div>
+                            <div class="action-timeline">⏱ Timeline: 90 days | Success Metric: $1K MRR</div>
+                        </div>
+                    </div>
+                    <div class="action-item">
+                        <div class="action-priority p3">P3</div>
+                        <div class="action-content">
+                            <div class="action-title">Find Technical Co-founder or Lead Developer</div>
+                            <div class="action-description">Reduce dependency on outsourced development. Look for someone with AI/ML experience. Consider offering 10-20% equity for the right partner.</div>
+                            <div class="action-timeline">⏱ Timeline: Ongoing | Success Metric: CTO hired</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Product Promotion Steps -->
+            <section class="card analysis-section">
+                <h4><span>🚀</span> Product Promotion Strategy</h4>
+                <div class="promotion-timeline" id="promotionStrategy">
+                    <div class="promotion-step">
+                        <div class="step-header">
+                            <span class="step-phase">Phase 1: Validation</span>
+                            <span class="step-timeline-badge">Month 1-2</span>
+                        </div>
+                        <div class="step-title">Customer Discovery & Pre-Launch</div>
+                        <div class="step-description">Build buzz before the product is ready. Validate demand and gather early adopters who will become your first customers and advocates.</div>
+                        <div class="step-checklist">
+                            <div class="step-checklist-item">Create landing page with value proposition and waitlist</div>
+                            <div class="step-checklist-item">Run 30+ customer discovery interviews</div>
+                            <div class="step-checklist-item">Build email list of 500+ interested SMBs</div>
+                            <div class="step-checklist-item">Create demo video showing AI content generation</div>
+                            <div class="step-checklist-item">Collect 10+ pre-orders with refundable deposits</div>
+                        </div>
+                        <div class="step-actions">
+                            <span class="step-action-tag">Landing Page</span>
+                            <span class="step-action-tag">Email Marketing</span>
+                            <span class="step-action-tag">Customer Interviews</span>
+                            <span class="step-action-tag">Waitlist Building</span>
+                        </div>
+                    </div>
+
+                    <div class="promotion-step">
+                        <div class="step-header">
+                            <span class="step-phase">Phase 2: Beta Launch</span>
+                            <span class="step-timeline-badge">Month 3-4</span>
+                        </div>
+                        <div class="step-title">Early Adopter Acquisition</div>
+                        <div class="step-description">Launch to a small group of committed early adopters. Focus on getting product-market fit signals before scaling.</div>
+                        <div class="step-checklist">
+                            <div class="step-checklist-item">Onboard 20 beta users with white-glove support</div>
+                            <div class="step-checklist-item">Implement feedback loop (weekly calls, in-app surveys)</div>
+                            <div class="step-checklist-item">Achieve 40%+ weekly active usage rate</div>
+                            <div class="step-checklist-item">Create 3 detailed case studies with ROI metrics</div>
+                            <div class="step-checklist-item">Launch referral program (give 1 month, get 1 month)</div>
+                        </div>
+                        <div class="step-actions">
+                            <span class="step-action-tag">Beta Program</span>
+                            <span class="step-action-tag">Customer Success</span>
+                            <span class="step-action-tag">Case Studies</span>
+                            <span class="step-action-tag">Referral Program</span>
+                        </div>
+                    </div>
+
+                    <div class="promotion-step">
+                        <div class="step-header">
+                            <span class="step-phase">Phase 3: Growth</span>
+                            <span class="step-timeline-badge">Month 5-8</span>
+                        </div>
+                        <div class="step-title">Scale Customer Acquisition</div>
+                        <div class="step-description">With product-market fit validated, invest in scalable acquisition channels. Focus on channels with best unit economics.</div>
+                        <div class="step-checklist">
+                            <div class="step-checklist-item">Launch content marketing (blog, YouTube tutorials)</div>
+                            <div class="step-checklist-item">Start paid ads on Facebook/Instagram ($2K/month test)</div>
+                            <div class="step-checklist-item">Partner with 5 SMB-focused SaaS tools (integrations)</div>
+                            <div class="step-checklist-item">Guest post on 10 small business publications</div>
+                            <div class="step-checklist-item">Launch affiliate program for marketing consultants</div>
+                        </div>
+                        <div class="step-actions">
+                            <span class="step-action-tag">Content Marketing</span>
+                            <span class="step-action-tag">Paid Ads</span>
+                            <span class="step-action-tag">Partnerships</span>
+                            <span class="step-action-tag">Affiliate Program</span>
+                            <span class="step-action-tag">SEO</span>
+                        </div>
+                    </div>
+
+                    <div class="promotion-step">
+                        <div class="step-header">
+                            <span class="step-phase">Phase 4: Scale</span>
+                            <span class="step-timeline-badge">Month 9-12</span>
+                        </div>
+                        <div class="step-title">Market Expansion</div>
+                        <div class="step-description">Expand to new verticals and geographies. Build brand awareness and establish market leadership in SMB social automation.</div>
+                        <div class="step-checklist">
+                            <div class="step-checklist-item">Expand to 3 new industry verticals</div>
+                            <div class="step-checklist-item">Launch Product Hunt and reach top 5</div>
+                            <div class="step-checklist-item">Sponsor 5 SMB-focused podcasts</div>
+                            <div class="step-checklist-item">Build integration marketplace (Zapier, Shopify, etc.)</div>
+                            <div class="step-checklist-item">Target: 500 paying customers, $25K MRR</div>
+                        </div>
+                        <div class="step-actions">
+                            <span class="step-action-tag">Product Hunt</span>
+                            <span class="step-action-tag">Podcast Sponsorship</span>
+                            <span class="step-action-tag">Integrations</span>
+                            <span class="step-action-tag">PR Campaign</span>
+                            <span class="step-action-tag">International</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <div class="button-row">
+                <button class="save-btn" onclick="saveIdea()">💾 Save Analysis</button>
+                <button class="primary-btn" onclick="location.href='full-report.html'">📄 View Full Report</button>
+                <button class="secondary-btn" onclick="location.href='HistoryPage.html'">📋 My Ideas</button>
+                <button class="secondary-btn" onclick="location.href='SeekHelp.html'">👨‍🏫 Get Expert Help</button>
+                <button class="secondary-btn" onclick="resetAnalysis()">🔄 Analyze New Idea</button>
+            </div>
+
+            <!-- Follow-up Chatbot -->
+            <section class="card chatbot-section" id="chatbotSection">
+                <h3>💬 Ask Follow-up Questions</h3>
+                <p class="subtitle">Not sure about something in the analysis? Ask me anything about your startup idea, the scores, competitors, or strategy.</p>
+
+                <div class="chat-messages" id="chatMessages">
+                </div>
+
+                <div class="chat-input-row">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Ask a question about your analysis..." />
+                    <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()">➤</button>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Analyzing Your Idea...</div>
+    <div class="loading-subtext" id="loadingSubtext">Connecting to AI analysis engine</div>
+    <div class="loading-progress">
+        <div class="loading-progress-bar" id="loadingProgressBar"></div>
+    </div>
+</div>
+
+<!-- Success Toast -->
+<div class="success-toast" id="successToast">
+    ✅ <span id="toastMessage">Idea saved successfully!</span>
+</div>
+
+<script>
+    // API Configuration
+    const API_URL = 'api/save_idea.php';
+    const OPENAI_API_KEY = 'sk-xxx';
+
+    // Current analysis data (populated by OpenAI)
+    let currentAnalysis = null;
+
+    // Loading progress animation
+    const loadingSteps = [
+        { text: 'Analyzing Your Idea...', sub: 'Connecting to AI analysis engine', progress: 10 },
+        { text: 'Evaluating Market...', sub: 'Researching industry trends and competitors', progress: 30 },
+        { text: 'Scoring Dimensions...', sub: 'Calculating team fit, feasibility, and business model', progress: 50 },
+        { text: 'Identifying Customers...', sub: 'Analyzing target segments and pain points', progress: 70 },
+        { text: 'Building Strategy...', sub: 'Creating go-to-market and promotion plan', progress: 90 },
+        { text: 'Finalizing Report...', sub: 'Generating actionable insights', progress: 100 }
+    ];
+
+    let loadingInterval = null;
+
+    function startLoadingAnimation() {
+        let step = 0;
+        const textEl = document.getElementById('loadingText');
+        const subEl = document.getElementById('loadingSubtext');
+        const barEl = document.getElementById('loadingProgressBar');
+
+        // Reset progress bar
+        if (barEl) barEl.style.width = '0%';
+
+        function updateStep() {
+            if (step < loadingSteps.length && textEl && subEl && barEl) {
+                textEl.textContent = loadingSteps[step].text;
+                subEl.textContent = loadingSteps[step].sub;
+                barEl.style.width = loadingSteps[step].progress + '%';
+                step++;
+            }
+        }
+
+        updateStep();
+        loadingInterval = setInterval(updateStep, 2000);
+    }
+
+    function stopLoadingAnimation() {
+        if (loadingInterval) {
+            clearInterval(loadingInterval);
+            loadingInterval = null;
+        }
+        // Reset progress
+        const barEl = document.getElementById('loadingProgressBar');
+        if (barEl) barEl.style.width = '0%';
+    }
+
+    // System prompt for OpenAI
+    const SYSTEM_PROMPT = `You are StartWise AI, an expert startup advisor and venture analyst. Analyze the given startup idea and provide a comprehensive evaluation.
+
+You MUST respond with ONLY valid JSON in this exact format (no markdown, no code blocks, just pure JSON):
+
+{
+    "title": "Short catchy name for the idea (max 50 chars)",
+    "industry": "Primary industry category (e.g., SaaS, FinTech, HealthTech, EdTech, E-commerce, MarTech)",
+    "stage": "Recommended stage (Pre-seed, Seed, Series A)",
+    "overallScore": <number 0-100>,
+    "confidence": <number 0-100>,
+    "scores": {
+        "teamFit": <number 0-100>,
+        "marketAttractiveness": <number 0-100>,
+        "feasibility": <number 0-100>,
+        "businessModel": <number 0-100>,
+        "competitiveMoat": <number 0-100>
+    },
+    "insights": {
+        "teamFit": "Brief insight about team requirements and founder-market fit",
+        "marketAttractiveness": "Brief insight about market size, growth, and pain intensity",
+        "feasibility": "Brief insight about technical and operational feasibility",
+        "businessModel": "Brief insight about revenue model and unit economics",
+        "competitiveMoat": "Brief insight about competitive advantages and defensibility"
+    },
+    "recommendation": "One of: Highly Recommended, Optimize & Launch, Validate Carefully, Consider Pivot",
+    "competitors": [
+        {
+            "name": "Competitor name",
+            "type": "Type of competitor",
+            "founded": "Year or N/A",
+            "funding": "Funding amount or status",
+            "pricing": "Pricing range",
+            "weakness": "Key weakness to exploit",
+            "threat": "high, medium, or low"
+        }
+    ],
+    "marketAnalysis": {
+        "tam": "Total Addressable Market (e.g., $50B)",
+        "sam": "Serviceable Addressable Market (e.g., $5B)",
+        "som": "Serviceable Obtainable Market Year 5 (e.g., $500M)",
+        "growth": "Annual growth rate (e.g., 15%)",
+        "potentialUsers": "Number of potential users/customers"
+    },
+    "customerSegments": [
+        {
+            "name": "Segment name",
+            "description": "Who they are and their pain point",
+            "icon": "Single emoji representing segment",
+            "potential": "high or medium"
+        }
+    ],
+    "actionItems": [
+        {
+            "priority": "P0, P1, P2, or P3",
+            "title": "Action item title",
+            "description": "Detailed description of what to do",
+            "timeline": "Timeframe (e.g., 30 days)",
+            "metric": "Success metric"
+        }
+    ],
+    "promotionStrategy": [
+        {
+            "phase": "Phase name (e.g., Validation, Beta Launch, Growth, Scale)",
+            "timeline": "Timeline (e.g., Month 1-2)",
+            "title": "Phase title",
+            "description": "What to focus on in this phase",
+            "checklist": ["Action 1", "Action 2", "Action 3", "Action 4", "Action 5"],
+            "tactics": ["Tactic 1", "Tactic 2", "Tactic 3", "Tactic 4"]
+        }
+    ]
+}
+
+SCORING CRITERIA (use these weights):
+- Team Fit (40%): Founder-market fit, team complementarity, execution track record, commitment level
+- Market Attractiveness (20%): Pain intensity, market size (TAM/SAM), growth rate, willingness to pay
+- Feasibility (20%): Technical complexity, resource requirements, regulatory risk, time to MVP
+- Business Model (15%): Revenue model clarity, unit economics, scalability, channel efficiency
+- Competitive Moat (5%): Defensibility, network effects, switching costs, brand potential
+
+SCORING GUIDELINES:
+- 80-100: Exceptional, ready to scale
+- 60-79: Good, needs optimization
+- 40-59: Moderate, needs validation
+- 20-39: Weak, consider pivoting
+- 0-19: Critical issues, major rethink needed
+
+Provide 3-5 real competitors, 3-4 customer segments, 4-5 action items, and 4 promotion phases. Be accurate, specific, and realistic based on the actual idea.`;
+
+    async function analyzeIdea() {
+        const ideaText = document.getElementById('ideaInput').value.trim();
+
+        if (ideaText.length < 50) {
+            alert('Please provide more detail about your idea (at least 50 characters)');
+            return;
+        }
+
+        // Disable button and show loading
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        analyzeBtn.disabled = true;
+        document.getElementById('loadingOverlay').classList.add('visible');
+        startLoadingAnimation();
+
+        try {
+            // Call OpenAI API directly
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OPENAI_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o',
+                    messages: [
+                        { role: 'system', content: SYSTEM_PROMPT },
+                        { role: 'user', content: `Analyze this startup idea:\n\n${ideaText}` }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 4000
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error?.message || 'OpenAI API error');
+            }
+
+            const result = await response.json();
+            let content = result.choices[0].message.content;
+
+            // Clean the content (remove markdown code blocks if present)
+            content = content.trim();
+            // Remove ```json at start
+            if (content.startsWith('```json')) {
+                content = content.substring(7);
+            } else if (content.startsWith('```')) {
+                content = content.substring(3);
+            }
+            // Remove ``` at end
+            if (content.endsWith('```')) {
+                content = content.slice(0, -3);
+            }
+            content = content.trim();
+
+            // Parse the JSON response
+            let analysis;
+            try {
+                analysis = JSON.parse(content);
+            } catch (parseError) {
+                console.error('JSON Parse Error:', parseError);
+                console.error('Raw content:', content);
+                throw new Error('Failed to parse AI response. Please try again.');
+            }
+
+            // Store the analysis data
+            currentAnalysis = analysis;
+            currentAnalysis.description = ideaText;
+
+            // Update the UI with real data
+            updateAnalysisDisplay(currentAnalysis);
+
+            // Hide loading and show results
+            stopLoadingAnimation();
+            document.getElementById('loadingOverlay').classList.remove('visible');
+            document.getElementById('inputSection').style.display = 'none';
+            document.getElementById('analysisOutput').classList.add('visible');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        } catch (error) {
+            stopLoadingAnimation();
+            document.getElementById('loadingOverlay').classList.remove('visible');
+            alert('Error analyzing idea: ' + error.message);
+            console.error('Analysis error:', error);
+        } finally {
+            analyzeBtn.disabled = false;
+        }
+    }
+
+    function updateAnalysisDisplay(data) {
+        // Update overall score
+        const score = data.overallScore || 0;
+        document.getElementById('scoreCircle').style.setProperty('--score', score);
+        document.getElementById('overallScore').innerHTML = `${score}<span class="score-percent">%</span>`;
+
+        // Update title and meta
+        document.getElementById('ideaTitle').textContent = data.title || 'Your Startup Idea';
+        document.getElementById('industry').textContent = `Industry: ${data.industry || 'Technology'}`;
+        document.getElementById('stage').textContent = `Stage: ${data.stage || 'Pre-seed'}`;
+        document.getElementById('confidence').textContent = `Confidence: ${data.confidence || 75}%`;
+
+        // Update recommendation
+        const recEl = document.getElementById('recommendation');
+        const rec = data.recommendation || 'Validate Carefully';
+        recEl.textContent = getRecommendationEmoji(rec) + ' ' + rec.toUpperCase();
+        recEl.className = 'score-recommendation ' + getRecommendationClass(rec);
+
+        // Update dimension scores
+        const scores = data.scores || {};
+        const insights = data.insights || {};
+
+        updateDimension('team', scores.teamFit, insights.teamFit);
+        updateDimension('market', scores.marketAttractiveness, insights.marketAttractiveness);
+        updateDimension('feasibility', scores.feasibility, insights.feasibility);
+        updateDimension('business', scores.businessModel, insights.businessModel);
+        updateDimension('competitive', scores.competitiveMoat, insights.competitiveMoat);
+
+        // Update competitors
+        if (data.competitors && data.competitors.length > 0) {
+            updateCompetitors(data.competitors);
+        }
+
+        // Update market analysis
+        if (data.marketAnalysis) {
+            updateMarketAnalysis(data.marketAnalysis);
+        }
+
+        // Update customer segments
+        if (data.customerSegments && data.customerSegments.length > 0) {
+            updateCustomerSegments(data.customerSegments);
+        }
+
+        // Update action items
+        if (data.actionItems && data.actionItems.length > 0) {
+            updateActionItems(data.actionItems);
+        }
+
+        // Update promotion strategy
+        if (data.promotionStrategy && data.promotionStrategy.length > 0) {
+            updatePromotionStrategy(data.promotionStrategy);
+        }
+    }
+
+    function updateDimension(name, score, insight) {
+        const scoreVal = score || 0;
+        const scoreEl = document.getElementById(`${name}Score`);
+        const barEl = document.getElementById(`${name}Bar`);
+        const insightEl = document.getElementById(`${name}Insight`);
+
+        if (scoreEl) scoreEl.textContent = `${scoreVal}%`;
+        if (barEl) barEl.style.width = `${scoreVal}%`;
+        if (insightEl && insight) insightEl.textContent = insight;
+
+        // Update the tag based on score
+        const card = scoreEl?.closest('.dimension-card');
+        if (card) {
+            const tag = card.querySelector('.dimension-tag');
+            if (tag) {
+                if (scoreVal >= 70) {
+                    tag.className = 'dimension-tag strength';
+                    tag.textContent = 'Core Strength';
+                } else if (scoreVal >= 50) {
+                    tag.className = 'dimension-tag attention';
+                    tag.textContent = 'Needs Attention';
+                } else {
+                    tag.className = 'dimension-tag risk';
+                    tag.textContent = 'High Risk';
+                }
+            }
+        }
+    }
+
+    function getRecommendationEmoji(rec) {
+        const lower = rec.toLowerCase();
+        if (lower.includes('highly')) return '🟢';
+        if (lower.includes('optimize')) return '🟡';
+        if (lower.includes('validate')) return '🟠';
+        return '🔴';
+    }
+
+    function getRecommendationClass(rec) {
+        const lower = rec.toLowerCase();
+        if (lower.includes('highly')) return 'highly-recommended';
+        if (lower.includes('optimize')) return 'optimize';
+        if (lower.includes('validate')) return 'validate';
+        return 'pivot';
+    }
+
+    function updateCompetitors(competitors) {
+        const grid = document.getElementById('competitorsGrid');
+        grid.innerHTML = competitors.map(comp => `
+            <div class="competitor-card">
+                <div class="competitor-header">
+                    <div class="competitor-logo">${getCompetitorEmoji(comp.type || comp.name)}</div>
+                    <div class="competitor-info">
+                        <h5>${comp.name}</h5>
+                        <span class="competitor-type">${comp.type || 'Competitor'}</span>
+                    </div>
+                </div>
+                <div class="competitor-details">
+                    <div class="competitor-detail">
+                        <span class="competitor-detail-label">Founded</span>
+                        <span class="competitor-detail-value">${comp.founded || 'N/A'}</span>
+                    </div>
+                    <div class="competitor-detail">
+                        <span class="competitor-detail-label">Funding</span>
+                        <span class="competitor-detail-value">${comp.funding || 'N/A'}</span>
+                    </div>
+                    <div class="competitor-detail">
+                        <span class="competitor-detail-label">Pricing</span>
+                        <span class="competitor-detail-value">${comp.pricing || 'N/A'}</span>
+                    </div>
+                    <div class="competitor-detail">
+                        <span class="competitor-detail-label">Weakness</span>
+                        <span class="competitor-detail-value">${comp.weakness || 'N/A'}</span>
+                    </div>
+                </div>
+                <span class="competitor-threat ${comp.threat || 'medium'}">${(comp.threat || 'medium').charAt(0).toUpperCase() + (comp.threat || 'medium').slice(1)} Threat</span>
+            </div>
+        `).join('');
+    }
+
+    function getCompetitorEmoji(type) {
+        const lower = (type || '').toLowerCase();
+        if (lower.includes('social')) return '📱';
+        if (lower.includes('enterprise')) return '🏢';
+        if (lower.includes('analytics')) return '📊';
+        if (lower.includes('ai') || lower.includes('ml')) return '🤖';
+        if (lower.includes('marketing')) return '🎯';
+        if (lower.includes('finance')) return '💰';
+        if (lower.includes('health')) return '🏥';
+        if (lower.includes('education')) return '📚';
+        return '🌐';
+    }
+
+    function updateMarketAnalysis(market) {
+        const grid = document.getElementById('marketAnalysis');
+        grid.innerHTML = `
+            <div class="market-card">
+                <div class="market-card-icon">🌍</div>
+                <div class="market-card-value">${market.tam || 'N/A'}</div>
+                <div class="market-card-label">Total Addressable Market</div>
+            </div>
+            <div class="market-card">
+                <div class="market-card-icon">🎯</div>
+                <div class="market-card-value">${market.sam || 'N/A'}</div>
+                <div class="market-card-label">Serviceable Market</div>
+            </div>
+            <div class="market-card">
+                <div class="market-card-icon">📊</div>
+                <div class="market-card-value">${market.growth || 'N/A'}</div>
+                <div class="market-card-label">Annual Growth Rate</div>
+            </div>
+            <div class="market-card">
+                <div class="market-card-icon">💰</div>
+                <div class="market-card-value">${market.som || 'N/A'}</div>
+                <div class="market-card-label">Obtainable Market (Year 5)</div>
+            </div>
+            <div class="market-card">
+                <div class="market-card-icon">🏢</div>
+                <div class="market-card-value">${market.potentialUsers || 'N/A'}</div>
+                <div class="market-card-label">Potential Customers</div>
+            </div>
+        `;
+    }
+
+    function updateCustomerSegments(segments) {
+        const container = document.getElementById('customerSegments');
+        container.innerHTML = segments.map(seg => `
+            <div class="customer-segment">
+                <div class="segment-icon">${seg.icon || '👥'}</div>
+                <div class="segment-info">
+                    <div class="segment-name">${seg.name}</div>
+                    <div class="segment-description">${seg.description}</div>
+                </div>
+                <div class="segment-potential ${seg.potential || 'medium'}">${(seg.potential || 'Medium').charAt(0).toUpperCase() + (seg.potential || 'medium').slice(1)} Potential</div>
+            </div>
+        `).join('');
+    }
+
+    function updateActionItems(items) {
+        const container = document.getElementById('actionItems');
+        container.innerHTML = items.map(item => `
+            <div class="action-item">
+                <div class="action-priority ${item.priority?.toLowerCase() || 'p2'}">${item.priority || 'P2'}</div>
+                <div class="action-content">
+                    <div class="action-title">${item.title}</div>
+                    <div class="action-description">${item.description}</div>
+                    <div class="action-timeline">⏱ Timeline: ${item.timeline || '30 days'} | Success Metric: ${item.metric || 'TBD'}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updatePromotionStrategy(phases) {
+        const container = document.getElementById('promotionStrategy');
+        container.innerHTML = phases.map((phase, index) => `
+            <div class="promotion-step">
+                <div class="step-header">
+                    <span class="step-phase">Phase ${index + 1}: ${phase.phase}</span>
+                    <span class="step-timeline-badge">${phase.timeline}</span>
+                </div>
+                <div class="step-title">${phase.title}</div>
+                <div class="step-description">${phase.description}</div>
+                <div class="step-checklist">
+                    ${(phase.checklist || []).map(item => `
+                        <div class="step-checklist-item">${item}</div>
+                    `).join('')}
+                </div>
+                <div class="step-actions">
+                    ${(phase.tactics || []).map(tactic => `
+                        <span class="step-action-tag">${tactic}</span>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function resetAnalysis() {
+        document.getElementById('inputSection').style.display = 'block';
+        document.getElementById('analysisOutput').classList.remove('visible');
+        document.getElementById('ideaInput').value = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function saveIdea() {
+        if (!currentAnalysis) {
+            showToast('No analysis to save. Please analyze an idea first.');
+            return;
+        }
+
+        // Prepare data for saving
+        const saveData = {
+            title: currentAnalysis.title,
+            description: currentAnalysis.description,
+            industry: currentAnalysis.industry,
+            stage: currentAnalysis.stage,
+            overallScore: currentAnalysis.overallScore,
+            scores: currentAnalysis.scores,
+            recommendation: currentAnalysis.recommendation,
+            competitors: currentAnalysis.competitors,
+            customerSegments: currentAnalysis.customerSegments,
+            marketAnalysis: currentAnalysis.marketAnalysis,
+            actionItems: currentAnalysis.actionItems,
+            promotionSteps: currentAnalysis.promotionStrategy
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(saveData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                showToast('Idea saved successfully!');
+            } else {
+                showToast('Error: ' + (result.error || 'Could not save idea'));
+            }
+        } catch (error) {
+            // If PHP backend is not available, save to localStorage as fallback
+            const ideas = JSON.parse(localStorage.getItem('startwise_ideas') || '[]');
+            saveData.id = 'idea_' + Date.now();
+            saveData.createdAt = new Date().toISOString();
+            ideas.push(saveData);
+            localStorage.setItem('startwise_ideas', JSON.stringify(ideas));
+            showToast('Idea saved locally!');
+        }
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('successToast');
+        document.getElementById('toastMessage').textContent = message;
+        toast.classList.add('visible');
+        setTimeout(() => {
+            toast.classList.remove('visible');
+        }, 3000);
+    }
+
+    // Allow Ctrl+Enter to submit
+    document.getElementById('ideaInput').addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'Enter') {
+            analyzeIdea();
+        }
+    });
+
+    // Chatbot functionality
+    let chatHistory = [];
+
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        if (!message || !currentAnalysis) return;
+
+        input.value = '';
+        appendChatMessage('user', message);
+
+        const sendBtn = document.getElementById('chatSendBtn');
+        sendBtn.disabled = true;
+
+        // Show typing indicator
+        const typingEl = document.createElement('div');
+        typingEl.className = 'chat-typing';
+        typingEl.id = 'chatTyping';
+        typingEl.innerHTML = '<div class="chat-typing-dots"><span></span><span></span><span></span></div> AI is thinking...';
+        document.getElementById('chatMessages').appendChild(typingEl);
+        scrollChat();
+
+        // Build messages for OpenAI
+        const analysisContext = JSON.stringify(currentAnalysis, null, 2);
+        const systemMsg = `You are StartWise AI, a helpful startup advisor. The user previously submitted a startup idea and received this analysis:\n\n${analysisContext}\n\nNow the user has follow-up questions. Answer concisely and helpfully based on the analysis above. Keep responses focused and practical. Use plain text, not markdown.`;
+
+        const messages = [
+            { role: 'system', content: systemMsg },
+            ...chatHistory,
+            { role: 'user', content: message }
+        ];
+
+        fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'gpt-4o',
+                messages: messages,
+                temperature: 0.7,
+                max_tokens: 1000
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const reply = data.choices[0].message.content;
+            chatHistory.push({ role: 'user', content: message });
+            chatHistory.push({ role: 'assistant', content: reply });
+
+            const typing = document.getElementById('chatTyping');
+            if (typing) typing.remove();
+
+            appendChatMessage('ai', reply);
+            sendBtn.disabled = false;
+        })
+        .catch(err => {
+            const typing = document.getElementById('chatTyping');
+            if (typing) typing.remove();
+
+            appendChatMessage('ai', 'Sorry, I encountered an error. Please try again.');
+            sendBtn.disabled = false;
+            console.error('Chat error:', err);
+        });
+    }
+
+    function appendChatMessage(type, text) {
+        const container = document.getElementById('chatMessages');
+        const msg = document.createElement('div');
+        msg.className = `chat-message ${type}`;
+        msg.innerHTML = `
+            <div class="chat-avatar">${type === 'user' ? '👤' : '🤖'}</div>
+            <div class="chat-bubble">${escapeHtml(text)}</div>
+        `;
+        container.appendChild(msg);
+        scrollChat();
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function scrollChat() {
+        const container = document.getElementById('chatMessages');
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // Allow Enter to send chat message
+    document.getElementById('chatInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendChatMessage();
+        }
+    });
+</script>
+
+</body>
+</html>
